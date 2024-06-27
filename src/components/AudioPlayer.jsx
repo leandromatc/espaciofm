@@ -1,11 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  FaPlay,
-  FaPause,
-  FaForward,
-  FaBackward,
-  FaVolumeUp,
-} from "react-icons/fa";
+import { FaPlay, FaPause, FaVolumeUp } from "react-icons/fa";
 
 const AudioPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -51,8 +45,9 @@ const AudioPlayer = () => {
   };
 
   return (
-    <div className="flex flex-col gap-5 items-center justify-center p-4 bg-neutral-50 rounded-lg shadow-lg max-w-md mx-auto">
+    <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-5 rounded-lg bg-neutral-50 p-4 shadow-lg">
       <audio
+        autoPlay
         ref={audioRef}
         src="https://medios.ciudaddigital.com.uy:18098/EspacioFM"
       />
@@ -60,12 +55,12 @@ const AudioPlayer = () => {
         <div className="flex items-center justify-center space-x-4">
           <button
             onClick={togglePlayPause}
-            className="text-neutral-50 rounded-full p-4 bg-red-600 hover:text-neutral-700 transition"
+            className="rounded-full bg-red-600 p-4 text-neutral-50 transition hover:text-neutral-700"
           >
             {isPlaying ? <FaPause /> : <FaPlay />}
           </button>
         </div>
-        <div className="flex items-center justify-between text-neutral-700 w-full px-4">
+        <div className="flex w-full items-center justify-between px-4 text-neutral-700">
           <span className="text-sm">{formatTime(currentTime)}</span>
           <input
             type="range"
@@ -74,12 +69,12 @@ const AudioPlayer = () => {
             step="0.1"
             value={currentTime}
             onChange={handleTimeChange}
-            className="w-full mx-2"
+            className="mx-2 w-full"
           />
         </div>
       </div>
       <div className="flex items-center justify-center space-x-4">
-        <button className="text-neutral-700 hover:text-neutral-500 transition">
+        <button className="text-neutral-700 transition hover:text-neutral-500">
           <FaVolumeUp />
         </button>
         <input
