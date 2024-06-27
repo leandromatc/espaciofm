@@ -14,17 +14,6 @@ const AudioPlayer = () => {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    const handleAutoplay = async () => {
-      try {
-        await audioRef.current.play();
-        setIsPlaying(true);
-      } catch (error) {
-        console.log("Autoplay failed:", error);
-      }
-    };
-
-    handleAutoplay();
-
     const interval = setInterval(() => {
       if (audioRef.current) {
         setCurrentTime(audioRef.current.currentTime);
@@ -70,26 +59,14 @@ const AudioPlayer = () => {
       <div className="flex flex-col gap-5">
         <div className="flex items-center justify-center space-x-4">
           <button
-            onClick={() => (audioRef.current.currentTime -= 10)}
-            className="text-neutral-700 hover:text-neutral-500 transition"
-          >
-            <FaBackward />
-          </button>
-          <button
             onClick={togglePlayPause}
             className="text-neutral-50 rounded-full p-4 bg-red-600 hover:text-neutral-700 transition"
           >
             {isPlaying ? <FaPause /> : <FaPlay />}
           </button>
-          <button
-            onClick={() => (audioRef.current.currentTime += 10)}
-            className="text-neutral-700 hover:text-neutral-500 transition"
-          >
-            <FaForward />
-          </button>
         </div>
         <div className="flex items-center justify-between text-neutral-700 w-full px-4">
-          <span>{formatTime(currentTime)}</span>
+          <span className="text-sm">{formatTime(currentTime)}</span>
           <input
             type="range"
             min="0"

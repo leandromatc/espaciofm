@@ -3,22 +3,26 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        inter: ["Inter", "sans-serif"],
+        shadowsIntoLight: ["Shadows Into Light", "cursive"],
+      },
       animation: {
-        blob: "blob 7s infinite",
+        blob: "blob 15s infinite",
       },
       keyframes: {
         blob: {
           "0%": {
-            transform: "translate(0px, 0px) scale(1)",
+            transform: "translate(0px, 0px) scale(0.6)",
           },
-          "33%": {
-            transform: "translate(50px, -50px) scale(1.12)",
+          "20%": {
+            transform: "translate(250%, 10%) scale(1.2)",
           },
-          "66%": {
-            transform: "translate(-80px, 20px) scale(0.8)",
+          "40%": {
+            transform: "translate(120%, 100%) scale(0.9)",
           },
           "100%": {
-            transform: "translate(0px, 0px) scale(1)",
+            transform: "translate(0px, 0px) scale(0.6)",
           },
         },
       },
