@@ -54,7 +54,7 @@ const AudioPlayer = () => {
     <div className="flex flex-col gap-5 items-center justify-center p-4 bg-neutral-50 rounded-lg shadow-lg max-w-md mx-auto">
       <audio
         ref={audioRef}
-        src="http://radiolatina.live:7926/stream?type=http&nocache=2"
+        src="https://medios.ciudaddigital.com.uy:18098/EspacioFM"
       />
       <div className="flex flex-col gap-5">
         <div className="flex items-center justify-center space-x-4">
