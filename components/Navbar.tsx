@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   return (
@@ -10,9 +9,6 @@ const Navbar = () => {
         <Link href='#'>servicios</Link>
       </div>
       <div></div>
-      <div>
-        <ThemeToggle />
-      </div>
     </nav>
   );
 };
