@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='es'>
+    <html lang='es' className='dark'>
       <head>
         <link rel='icon' href='/favicon.svg' />
         <link
@@ -61,7 +61,6 @@ export default function RootLayout({
           sizes='512x512'
           href='/images/android-chrome-512x512.png'
         />
-        <link rel='manifest' href='/site.webmanifest' />
         <meta name='theme-color' content='#ffffff' />
       </head>
       <body className={`${inter.className} antialiased`}>{children}</body>

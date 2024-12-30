@@ -1,15 +1,17 @@
-import { AudioPlayer } from "@/components/AudioPlayer";
-import Navbar from "@/components/Navbar";
+import About from "@/components/About";
+import Footer from "@/components/Footer";
+import Hero from "@/components/Hero";
+import Services from "@/components/Services";
+import TodayPrograms from "@/components/TodayPrograms";
 
 export default function Home() {
   return (
-    <div>
-      <section className='flex flex-col w-full min-h-screen'>
-        <Navbar />
-        <AudioPlayer />
-      </section>
-      <main>
-      </main>
-    </div>
+    <main>
+      <Hero />
+      <TodayPrograms />
+      <Services />
+      <About />
+      <Footer />
+    </main>
   );
 }

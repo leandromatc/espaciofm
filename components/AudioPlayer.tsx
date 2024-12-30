@@ -83,7 +83,7 @@ export function AudioPlayer() {
     if (audioRef.current) {
       audioRef.current.currentTime = Math.max(
         audioRef.current.currentTime - 10,
-        0
+        0,
       );
     }
   };
@@ -104,33 +104,33 @@ export function AudioPlayer() {
   };
 
   return (
-    <div className='bg-primary text-primary-foreground p-4 rounded-lg shadow-lg max-w-3xl mx-auto'>
+    <div className="bg-primary text-primary-foreground mx-auto max-w-5xl rounded-lg bg-neutral-950 p-4 shadow-lg ring-1 ring-inset ring-neutral-900">
       <audio
         ref={audioRef}
-        src='https://medios.ciudaddigital.com.uy:18098/EspacioFM'
+        src="https://medios.ciudaddigital.com.uy:18098/EspacioFM"
       />
-      <div className='flex items-center justify-between mb-4'>
-        <div className='flex items-center space-x-4'>
-          <Button variant='ghost' size='icon' onClick={rewind10Seconds}>
-            <SkipBack className='h-6 w-6' />
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" size="icon" onClick={rewind10Seconds}>
+            <SkipBack className="h-6 w-6" />
           </Button>
-          <Button variant='ghost' size='icon' onClick={togglePlay}>
+          <Button variant="ghost" size="icon" onClick={togglePlay}>
             {isPlaying ? (
-              <Pause className='h-6 w-6' />
+              <Pause className="h-6 w-6" />
             ) : (
-              <Play className='h-6 w-6' />
+              <Play className="h-6 w-6" />
             )}
           </Button>
-          <Button variant='ghost' size='icon' onClick={goToLive}>
-            <RefreshCcw className='h-6 w-6' />
+          <Button variant="ghost" size="icon" onClick={goToLive}>
+            <RefreshCcw className="h-6 w-6" />
           </Button>
         </div>
-        <div className='flex items-center space-x-2'>
-          <Button variant='ghost' size='icon' onClick={toggleMute}>
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="icon" onClick={toggleMute}>
             {isMuted ? (
-              <VolumeX className='h-6 w-6' />
+              <VolumeX className="h-6 w-6" />
             ) : (
-              <Volume2 className='h-6 w-6' />
+              <Volume2 className="h-6 w-6" />
             )}
           </Button>
           <Slider
@@ -138,19 +138,20 @@ export function AudioPlayer() {
             max={1}
             step={0.01}
             onValueChange={handleVolumeChange}
-            className='w-24'
+            className="w-24"
           />
         </div>
       </div>
-      <div className='space-y-2'>
-        <div className='flex justify-between text-sm'>
-          <span className='text-xs'>{formatTime(currentTime)}</span>
-          <span className='text-xs'>En vivo</span>
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="text-xs">{formatTime(currentTime)}</span>
+          <span className="text-xs">En vivo</span>
         </div>
       </div>
-      <div className='mt-4 text-center'>
-        <p className='text-lg font-semibold'>
-          Estás escuchando: {currentProgram}
+      <div className="mt-4 text-center text-sm font-light">
+        <p className="">
+          Estás escuchando:{" "}
+          <span className="font-normal">{currentProgram}</span>
         </p>
       </div>
     </div>

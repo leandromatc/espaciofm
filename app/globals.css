@@ -5,6 +5,13 @@
 body {
   @apply bg-white text-black dark:bg-neutral-950 dark:text-white;
   font-family: "Inter", Arial, Helvetica, sans-serif;
+  background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px; /* Tamaño de cada celda */
 }
 
 @layer base {
