@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  background-color: rgb(10, 10, 10);
+}
 body {
   @apply bg-white text-black dark:bg-neutral-950 dark:text-white;
   font-family: "Inter", Arial, Helvetica, sans-serif;
