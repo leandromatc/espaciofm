@@ -5,35 +5,35 @@ import React from "react";
 
 const Navbar = () => {
   return (
-    <nav className='flex flex-col lg:flex-row gap-5 justify-between items-center p-4 w-full'>
+    <nav className="flex w-full flex-col items-center justify-between gap-5 p-4 lg:flex-row">
       <div>
-        <Link href='/'>
+        <Link href="/">
           <Image
-            src='/logo.png'
+            src="/logo.png"
             width={400}
             height={200}
-            alt='Logo de 91.5FM Espacio Sport'
-            className='max-w-[200px]'
+            alt="Logo de 91.5FM Espacio Sport"
+            className="max-w-[200px]"
           />
         </Link>
       </div>
-      <div className='flex gap-2'>
+      <div className="flex gap-2">
         <Link
-          className='group flex gap-1 bg-neutral-900 px-4 py-2 rounded-full text-neutral-200 hover:text-white'
-          href='#'
+          className="group flex gap-1 rounded-full bg-neutral-900 px-4 py-2 text-neutral-200 hover:text-white"
+          href="/programacion"
         >
           programación
           <span>
-            <ArrowRight className='group-hover:-rotate-45 transition-all' />
+            <ArrowRight className="transition-all group-hover:-rotate-45" />
           </span>
         </Link>
         <Link
-          className='group flex gap-1 bg-neutral-900 px-4 py-2 rounded-full text-neutral-200 hover:text-white'
-          href='#'
+          className="group flex gap-1 rounded-full bg-neutral-900 px-4 py-2 text-neutral-200 hover:text-white"
+          href="/#servicios"
         >
           servicios
           <span>
-            <ArrowRight className='group-hover:-rotate-45 transition-all' />
+            <ArrowRight className="transition-all group-hover:-rotate-45" />
           </span>
         </Link>
       </div>
