@@ -4,6 +4,7 @@
 
 html {
   background-color: rgb(10, 10, 10);
+  scroll-behavior: smooth;
 }
 body {
   @apply bg-white text-black dark:bg-neutral-950 dark:text-white;
