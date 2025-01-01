@@ -41,7 +41,9 @@ const TodayPrograms = () => {
   return (
     <section className="px-5">
       <div className="w-max">
-        <h2 className="text-3xl font-medium uppercase">Programación de hoy</h2>
+        <h2 className="text-wrap font-medium uppercase md:text-3xl">
+          Programación de hoy
+        </h2>
         <span className="block h-[2px] w-[100px] bg-red-600"></span>
       </div>
       <div className="flex flex-col gap-5 py-5">
@@ -63,7 +65,7 @@ const TodayPrograms = () => {
                 <p className="text-xs">{program.description}</p>
               </div>
               {currentProgram === program.name && (
-                <span className="flex items-center gap-2 text-xs">
+                <span className="flex flex-shrink-0 items-center gap-2 text-xs">
                   <Ping />
                   En vivo
                 </span>
