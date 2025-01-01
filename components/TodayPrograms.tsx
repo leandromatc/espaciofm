@@ -12,6 +12,7 @@ interface Program {
   days: string[];
   startTime: string;
   endTime: string;
+  description: string;
 }
 
 const TodayPrograms = () => {
@@ -56,9 +57,10 @@ const TodayPrograms = () => {
             >
               <div>
                 <h3 className="text-xl font-medium">{program.name}</h3>
-                <p className="text-sm text-neutral-300">
+                <p className="text-xl text-neutral-300">
                   {program.startTime} - {program.endTime}
                 </p>
+                <p className="text-xs">{program.description}</p>
               </div>
               {currentProgram === program.name && (
                 <span className="flex items-center gap-2 text-xs">

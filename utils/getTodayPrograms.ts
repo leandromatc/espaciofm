@@ -5,13 +5,14 @@ interface Program {
   days: string[];
   startTime: string;
   endTime: string;
+  description: string;
 }
 
 export const getTodayPrograms = () => {
   const now = new Date();
   const currentDay = now.toLocaleString("es-UY", { weekday: "long" });
   const todayPrograms: Array<Program> = programs.filter((program) =>
-    program.days.includes(currentDay)
+    program.days.includes(currentDay),
   );
   return todayPrograms;
 };

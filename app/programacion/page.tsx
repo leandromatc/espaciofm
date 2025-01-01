@@ -13,10 +13,10 @@ const page = () => {
           return (
             <article
               key={index}
-              className="cursor-pointer rounded-lg bg-neutral-900 p-4 ring-1 ring-inset ring-neutral-800"
+              className="flex cursor-pointer flex-col gap-2 rounded-lg bg-neutral-900 p-4 ring-1 ring-inset ring-neutral-800"
             >
-              <h2 className="text-2xl font-medium">{program.name}</h2>
-              <p>
+              <h2 className="text-2xl font-semibold">{program.name}</h2>
+              <p className="text-2xl">
                 {program.startTime} - {program.endTime}
               </p>
               <div className="flex gap-1 text-xs">
@@ -26,6 +26,7 @@ const page = () => {
                   </span>
                 ))}
               </div>
+              <p>{program.description}</p>
             </article>
           );
         })}
