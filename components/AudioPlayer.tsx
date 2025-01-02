@@ -23,8 +23,8 @@ export function AudioPlayer() {
   const [currentProgram, setCurrentProgram] = useState<string | null>(null);
 
   useEffect(() => {
-    const updateProgram = () => {
-      const program = getCurrentProgram();
+    const updateProgram = async () => {
+      const program = await getCurrentProgram();
       setCurrentProgram(program ? program.name : "Espacio Sport 91.5");
     };
 

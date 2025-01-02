@@ -9,9 +9,8 @@ import { ArrowRight } from "lucide-react";
 
 interface Program {
   name: string;
-  days: string[];
-  startTime: string;
-  endTime: string;
+  start_time: string;
+  end_time: string;
   description: string;
 }
 
@@ -20,14 +19,14 @@ const TodayPrograms = () => {
   const [currentProgram, setCurrentProgram] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPrograms = () => {
-      const todayPrograms = getTodayPrograms();
+    const fetchPrograms = async () => {
+      const todayPrograms = await getTodayPrograms();
       if (todayPrograms) {
         setPrograms(todayPrograms);
       }
     };
-    const updateProgram = () => {
-      const program = getCurrentProgram();
+    const updateProgram = async () => {
+      const program = await getCurrentProgram();
       setCurrentProgram(program ? program.name : "Espacio Sport 91.5");
     };
 
@@ -60,7 +59,7 @@ const TodayPrograms = () => {
               <div>
                 <h3 className="text-xl font-medium">{program.name}</h3>
                 <p className="text-xl text-neutral-300">
-                  {program.startTime} - {program.endTime}
+                  {program.start_time} - {program.end_time}
                 </p>
                 <p className="text-xs">{program.description}</p>
               </div>

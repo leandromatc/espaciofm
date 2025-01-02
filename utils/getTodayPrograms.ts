@@ -1,17 +1,10 @@
-import { programs } from "@/lib/programs";
+import { fetchPrograms } from "./fetchPrograms";
 
-interface Program {
-  name: string;
-  days: string[];
-  startTime: string;
-  endTime: string;
-  description: string;
-}
-
-export const getTodayPrograms = () => {
+export const getTodayPrograms = async () => {
   const now = new Date();
   const currentDay = now.toLocaleString("es-UY", { weekday: "long" });
-  const todayPrograms: Array<Program> = programs.filter((program) =>
+  const programs = await fetchPrograms();
+  const todayPrograms = programs.filter((program) =>
     program.days.includes(currentDay),
   );
   return todayPrograms;
