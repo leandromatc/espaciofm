@@ -26,7 +26,7 @@ const Footer = () => {
       </div>
       <div className="flex w-full justify-center pt-5">
         <span className="text-center text-xs text-neutral-200">
-          © 2024 91.5 Espacio FM Sport. Desarrollado por{" "}
+          © 2025 91.5 Espacio FM Sport. Desarrollado por{" "}
           <Link href={"https://beima.dev"} className="underline">
             BeiMa Devs
           </Link>
