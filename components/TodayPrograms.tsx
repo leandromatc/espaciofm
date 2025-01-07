@@ -6,7 +6,6 @@ import Link from "next/link";
 import { getCurrentProgram } from "@/utils/getCurrentProgram";
 import Ping from "./Ping";
 import { ArrowRight } from "lucide-react";
-import Loading from "../app/loading";
 
 interface Program {
   name: string;
