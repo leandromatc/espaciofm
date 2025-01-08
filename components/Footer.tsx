@@ -16,7 +16,7 @@ const Footer = () => {
           />
         </Link>
         <div>
-          <h6 className="font-medium">Contactanos</h6>
+          <h6 className="font-medium md:text-right">Contactanos</h6>
           <ul className="text-sm md:text-right">
             <li>18 de Julio y Aldunate</li>
             <li>Teléfono</li>
