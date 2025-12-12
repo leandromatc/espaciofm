@@ -18,7 +18,7 @@ export const fetchPrograms = async (): Promise<Program[]> => {
     return [];
   }
 
-  return data.map((program) => ({
+  return (data as Program[]).map((program) => ({
     ...program,
     start_time: formatTime(program.start_time),
     end_time: formatTime(program.end_time),
