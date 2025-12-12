@@ -19,7 +19,6 @@ const AudioPlayer = () => {
         setCurrentTime(audioRef.current.currentTime);
       }
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -53,6 +52,7 @@ const AudioPlayer = () => {
   return (
     <div className="flex flex-col gap-5 items-center justify-center p-4 bg-neutral-50 rounded-lg shadow-lg max-w-md mx-auto">
       <audio
+        autoPlay
         ref={audioRef}
         src="http://radiolatina.live:7926/stream?type=http&nocache=2"
       />
