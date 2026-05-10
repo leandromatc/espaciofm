@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -53,7 +53,7 @@ const Navbar = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="sm:hidden text-neutral-400 hover:text-white"
+              className="text-neutral-400 hover:text-white sm:hidden"
             >
               <Menu className="h-5 w-5" />
             </Button>
