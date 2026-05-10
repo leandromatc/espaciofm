@@ -1,41 +1,37 @@
-import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+
+const links = [
+  { href: "/#noticias", label: "Noticias" },
+  { href: "/programacion", label: "Programación" },
+  { href: "/#servicios", label: "Servicios" },
+];
 
 const Navbar = () => {
   return (
-    <nav className="flex w-full flex-col items-center justify-between gap-5 p-4 lg:flex-row">
-      <div>
-        <Link href="/">
+    <nav className="sticky top-0 z-40 border-b border-neutral-800/60 bg-neutral-950/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-screen-xl items-center justify-between px-5 py-3">
+        <Link href="/" className="shrink-0">
           <Image
             src="/logo.png"
-            width={400}
-            height={200}
+            width={320}
+            height={160}
             alt="Logo de 91.5FM Espacio Sport"
-            className="max-w-[200px]"
+            className="max-w-[150px]"
           />
         </Link>
-      </div>
-      <div className="flex gap-2">
-        <Link
-          className="group flex gap-1 rounded-full bg-neutral-900 px-4 py-2 text-neutral-200 hover:text-white"
-          href="/programacion"
-        >
-          programación
-          <span>
-            <ArrowRight className="transition-all group-hover:-rotate-45" />
-          </span>
-        </Link>
-        <Link
-          className="group flex gap-1 rounded-full bg-neutral-900 px-4 py-2 text-neutral-200 hover:text-white"
-          href="/#servicios"
-        >
-          servicios
-          <span>
-            <ArrowRight className="transition-all group-hover:-rotate-45" />
-          </span>
-        </Link>
+
+        <div className="flex items-center gap-1">
+          {links.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="rounded-full px-4 py-2 text-sm text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-white"
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
       </div>
     </nav>
   );

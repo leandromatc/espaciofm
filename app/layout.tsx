@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AudioPlayerBar } from "@/components/AudioPlayerBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -54,7 +55,6 @@ export default function RootLayout({
           sizes="192x192"
           href="/android-chrome-192x192.png"
         />
-
         <link
           rel="icon"
           type="image/png"
@@ -63,7 +63,10 @@ export default function RootLayout({
         />
         <meta name="theme-color" content="#ffffff" />
       </head>
-      <body className={`${inter.className} antialiased`}>{children}</body>
+      <body className={`${inter.className} pb-[72px] antialiased`}>
+        {children}
+        <AudioPlayerBar />
+      </body>
     </html>
   );
 }

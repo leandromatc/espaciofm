@@ -1,27 +1,24 @@
-import React from "react";
-import Navbar from "./Navbar";
-import { AudioPlayer } from "./AudioPlayer";
 import Ping from "./Ping";
 
 const Hero = () => {
   return (
-    <section className="flex w-full flex-col px-5 md:min-h-screen" id="hero">
-      <Navbar />
-      <div className="flex flex-col items-center justify-center gap-10 py-20 md:flex-grow md:py-0">
-        <div className="flex flex-col items-center gap-4">
-          <span className="flex items-center gap-2 rounded-full bg-neutral-900 px-2 py-1 text-xs ring-1 ring-inset ring-neutral-800">
-            <Ping /> Estamos en vivo
-          </span>
-          <h1 className="text-center text-4xl font-bold md:max-w-2xl md:text-7xl">
-            <span className="text-red-600">ESPACIO SPORT</span> 91.5 FM
+    <div className="border-b border-neutral-800/60 bg-gradient-to-r from-red-950/30 via-neutral-950 to-neutral-950">
+      <div className="mx-auto flex max-w-screen-xl items-center gap-4 px-5 py-5">
+        <span className="flex shrink-0 items-center gap-2 rounded-full bg-red-600/10 px-3 py-1.5 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-600/20">
+          <Ping />
+          En vivo
+        </span>
+        <div>
+          <h1 className="text-sm font-semibold tracking-wide">
+            <span className="text-red-500">ESPACIO SPORT</span>{" "}
+            <span className="text-neutral-200">91.5 FM</span>
           </h1>
-          <p className="font-light tracking-wider text-neutral-200">
-            Deporte, música y actualidad
+          <p className="text-xs text-neutral-500">
+            Deporte, música y actualidad · Mercedes, Soriano
           </p>
         </div>
-        <AudioPlayer />
       </div>
-    </section>
+    </div>
   );
 };
 
