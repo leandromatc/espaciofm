@@ -3,6 +3,15 @@ import { supabase } from "../lib/supabaseClient";
 
 const fmt = (time: string) => time.slice(0, 5);
 
+type SpecialEvent = {
+  id: number;
+  name: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  description: string | null;
+};
+
 export const getCurrentProgram = async () => {
   const now = new Date();
   const currentDay = now.toLocaleString("es-UY", { weekday: "long" });
@@ -12,10 +21,11 @@ export const getCurrentProgram = async () => {
     .toString()
     .padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`;
 
-  const [programs, { data: specialEvents }] = await Promise.all([
+  const [programs, { data: rawSpecial }] = await Promise.all([
     fetchPrograms(),
     supabase.from("special_events").select("*").eq("date", todayDate),
   ]);
+  const specialEvents = (rawSpecial ?? []) as SpecialEvent[];
 
   const regularMatch = programs.find(
     (p) =>
@@ -25,7 +35,7 @@ export const getCurrentProgram = async () => {
   );
   if (regularMatch) return regularMatch;
 
-  const specialMatch = (specialEvents ?? []).find(
+  const specialMatch = specialEvents.find(
     (e) => currentTime >= e.start_time && currentTime < e.end_time,
   );
   if (specialMatch)
