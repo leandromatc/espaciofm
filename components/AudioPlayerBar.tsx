@@ -77,13 +77,13 @@ export function AudioPlayerBar() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-800 bg-neutral-950/95 backdrop-blur-sm">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t-2 border-red-600 bg-neutral-950 shadow-[0_-4px_24px_rgba(220,38,38,0.15)]">
       <audio ref={audioRef} src={STREAM_URL} preload="none" />
-      <div className="mx-auto flex max-w-screen-xl items-center gap-4 px-4 py-3">
+      <div className="mx-auto flex max-w-screen-xl items-center gap-4 px-4 py-3 sm:py-3">
 
         {/* Station info */}
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="hidden shrink-0 sm:block">
+          <div className="shrink-0">
             <Ping />
           </div>
           <div className="min-w-0">
@@ -109,12 +109,12 @@ export function AudioPlayerBar() {
             variant="ghost"
             size="icon"
             onClick={togglePlay}
-            className="h-10 w-10 rounded-full bg-red-600 text-white hover:bg-red-500"
+            className="h-12 w-12 rounded-full bg-red-600 text-white hover:bg-red-500 sm:h-10 sm:w-10"
           >
             {isPlaying ? (
-              <Pause className="h-5 w-5" />
+              <Pause className="h-6 w-6 sm:h-5 sm:w-5" />
             ) : (
-              <Play className="h-5 w-5" />
+              <Play className="h-6 w-6 sm:h-5 sm:w-5" />
             )}
           </Button>
           <Button
@@ -128,18 +128,18 @@ export function AudioPlayerBar() {
           </Button>
         </div>
 
-        {/* Volume */}
-        <div className="hidden flex-1 items-center justify-end gap-2 sm:flex">
+        {/* Volume — desktop only; mute toggle on mobile */}
+        <div className="flex flex-1 items-center justify-end gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleMute}
-            className="h-8 w-8"
+            className="h-9 w-9 sm:h-8 sm:w-8"
           >
             {isMuted ? (
-              <VolumeX className="h-4 w-4" />
+              <VolumeX className="h-5 w-5 sm:h-4 sm:w-4" />
             ) : (
-              <Volume2 className="h-4 w-4" />
+              <Volume2 className="h-5 w-5 sm:h-4 sm:w-4" />
             )}
           </Button>
           <Slider
@@ -147,7 +147,7 @@ export function AudioPlayerBar() {
             max={1}
             step={0.01}
             onValueChange={handleVolumeChange}
-            className="w-20"
+            className="hidden w-20 sm:block"
           />
         </div>
       </div>
