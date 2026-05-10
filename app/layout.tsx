@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AudioPlayerBar } from "@/components/AudioPlayerBar";
+import { ConditionalPlayer } from "@/components/ConditionalPlayer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -65,7 +65,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} pb-[72px] antialiased`}>
         {children}
-        <AudioPlayerBar />
+        <ConditionalPlayer />
       </body>
     </html>
   );

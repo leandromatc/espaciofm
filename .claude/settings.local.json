@@ -4,7 +4,8 @@
       "Bash(pnpm add *)",
       "Bash(pnpm build *)",
       "Bash(Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue)",
-      "Bash(Write-Host \"done\")"
+      "Bash(Write-Host \"done\")",
+      "Bash(pnpm dlx *)"
     ]
   }
 }
