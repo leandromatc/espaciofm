@@ -15,7 +15,7 @@ export async function fetchPublishedNews(): Promise<News[]> {
     .select("*")
     .eq("published", true)
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(6);
 
   if (error) {
     console.error("Error fetching news:", error);
@@ -23,6 +23,25 @@ export async function fetchPublishedNews(): Promise<News[]> {
   }
 
   return (data as News[]) ?? [];
+}
+
+export async function fetchPublishedNewsPaginated(
+  page: number,
+  pageSize: number,
+): Promise<{ data: News[]; total: number }> {
+  const supabase = getServerSupabase();
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data, error, count } = await supabase
+    .from("news")
+    .select("*", { count: "exact" })
+    .eq("published", true)
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) return { data: [], total: 0 };
+  return { data: (data as News[]) ?? [], total: count ?? 0 };
 }
 
 export async function fetchNewsById(id: string): Promise<News | null> {

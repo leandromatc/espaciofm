@@ -34,8 +34,8 @@ const Services = () => {
       id="servicios"
     >
       <div className="mx-auto max-w-screen-xl">
-        <div className="mb-10 w-max">
-          <h2 className="text-3xl font-bold">Servicios</h2>
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold uppercase">Servicios</h2>
           <span className="mt-1 block h-[2px] w-[50px] bg-red-600" />
         </div>
 

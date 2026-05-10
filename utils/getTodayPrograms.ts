@@ -1,11 +1,31 @@
 import { fetchPrograms } from "./fetchPrograms";
+import { supabase } from "../lib/supabaseClient";
+
+const fmt = (time: string) => time.slice(0, 5);
 
 export const getTodayPrograms = async () => {
   const now = new Date();
   const currentDay = now.toLocaleString("es-UY", { weekday: "long" });
-  const programs = await fetchPrograms();
-  const todayPrograms = programs
-    .filter((program) => program.days.includes(currentDay))
-    .sort((a, b) => a.start_time.localeCompare(b.start_time));
-  return todayPrograms;
+  const todayDate = now.toISOString().split("T")[0];
+
+  const [programs, { data: specialEvents }] = await Promise.all([
+    fetchPrograms(),
+    supabase.from("special_events").select("*").eq("date", todayDate),
+  ]);
+
+  const regularToday = programs.filter((p) => p.days.includes(currentDay));
+
+  const specialToday = (specialEvents ?? []).map((e) => ({
+    id: e.id,
+    name: e.name,
+    days: [] as string[],
+    start_time: fmt(e.start_time),
+    end_time: fmt(e.end_time),
+    description: e.description ?? "",
+    isSpecial: true,
+  }));
+
+  return [...regularToday, ...specialToday].sort((a, b) =>
+    a.start_time.localeCompare(b.start_time),
+  );
 };

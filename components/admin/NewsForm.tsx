@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { News } from "@/types/supabase";
 import { MarkdownEditor } from "@/components/admin/MarkdownEditor";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import Link from "next/link";
 
 interface NewsFormProps {
@@ -27,7 +28,6 @@ export function NewsForm({ initialData, action, title }: NewsFormProps) {
       <form action={action} className="flex max-w-3xl flex-col gap-6">
         {/* Valores controlados por estado */}
         <input type="hidden" name="published" value={String(published)} />
-        <input type="hidden" name="image_url" value="" />
         <input type="hidden" name="content" value={content} />
 
         <Field label="Título *">
@@ -49,6 +49,10 @@ export function NewsForm({ initialData, action, title }: NewsFormProps) {
             className={inputClass}
             placeholder="Descripción breve en texto plano..."
           />
+        </Field>
+
+        <Field label="Imagen">
+          <ImageUpload name="image_url" defaultValue={initialData?.image_url} />
         </Field>
 
         <Field label="Contenido *" hint="Soporta Markdown">

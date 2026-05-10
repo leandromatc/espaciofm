@@ -1,5 +1,5 @@
 import { fetchPublishedNews } from "@/utils/fetchNews";
-import { NewsCard } from "@/components/NewsCard";
+import { NewsCard, FeaturedNewsCard } from "@/components/NewsCard";
 import { Newspaper } from "lucide-react";
 
 export async function NewsFeed() {
@@ -14,11 +14,18 @@ export async function NewsFeed() {
     );
   }
 
+  const [featured, ...rest] = newsList;
+
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-      {newsList.map((news) => (
-        <NewsCard key={news.id} news={news} />
-      ))}
+    <div className="flex flex-col gap-5">
+      <FeaturedNewsCard news={featured} />
+      {rest.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+          {rest.map((news) => (
+            <NewsCard key={news.id} news={news} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -11,8 +11,8 @@ const About = () => {
       <div className="mx-auto max-w-screen-xl">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="flex flex-col justify-center">
-            <div className="mb-5 w-max">
-              <h2 className="text-3xl font-bold">Sobre nosotros</h2>
+            <div className="mb-5">
+              <h2 className="text-2xl font-bold uppercase">Sobre nosotros</h2>
               <span className="mt-1 block h-[2px] w-[50px] bg-red-600" />
             </div>
             <p className="leading-relaxed text-neutral-400">
