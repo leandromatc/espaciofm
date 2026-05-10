@@ -2,12 +2,13 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { signOut } from "@/app/actions/auth";
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutDashboard, Newspaper, Radio, LogOut } from "lucide-react";
+import { LayoutDashboard, Newspaper, Radio, KeyRound, LogOut } from "lucide-react";
 
 const navLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/noticias", label: "Noticias", icon: Newspaper },
   { href: "/admin/programacion", label: "Programación", icon: Radio },
+  { href: "/admin/cuenta", label: "Mi cuenta", icon: KeyRound },
 ];
 
 export default async function AdminLayout({
