@@ -1,153 +1,107 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import {
-  Play,
-  Pause,
-  SkipBack,
-  Volume2,
-  VolumeX,
-  Radio,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Radio, SkipBack, Volume2, VolumeX } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
-import { getCurrentProgram } from "@/utils/getCurrentProgram";
-import Ping from "@/components/Ping";
+import { usePlayer } from "@/components/player/PlayerProvider";
+import { PlayDisc } from "@/components/player/PlayDisc";
+import { Equalizer } from "@/components/player/Equalizer";
+import { LiveDot } from "@/components/player/LiveDot";
+import { StreamStatusText } from "@/components/player/StreamStatus";
+import { useSchedule } from "@/components/schedule/ScheduleProvider";
 
-const STREAM_URL = "https://medios.ciudaddigital.com.uy:18098/EspacioFM";
-
+/**
+ * Barra fija inferior: siempre a mano en el celular. Cuando el play grande del
+ * tablero está a la vista se baja (no hay dos botones iguales en pantalla) y
+ * vuelve al scrollear.
+ */
 export function AudioPlayerBar() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
-  const [currentProgram, setCurrentProgram] = useState<string>("Espacio Sport 91.5");
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  useEffect(() => {
-    const updateProgram = async () => {
-      const program = await getCurrentProgram();
-      setCurrentProgram(program ? program.name : "Espacio Sport 91.5");
-    };
-    updateProgram();
-    const interval = setInterval(updateProgram, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const togglePlay = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (audio.paused) {
-      audio.play();
-      setIsPlaying(true);
-    } else {
-      audio.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  const rewind10 = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = Math.max(
-        audioRef.current.currentTime - 10,
-        0,
-      );
-    }
-  };
-
-  const goToLive = () => {
-    if (audioRef.current) {
-      audioRef.current.load();
-      audioRef.current.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const handleVolumeChange = (val: number[]) => {
-    const [v] = val;
-    setVolume(v);
-    if (audioRef.current) audioRef.current.volume = v;
-    setIsMuted(v === 0);
-  };
-
-  const toggleMute = () => {
-    if (!audioRef.current) return;
-    const next = !isMuted;
-    audioRef.current.muted = next;
-    setIsMuted(next);
-  };
+  const {
+    isPlaying,
+    status,
+    volume,
+    isMuted,
+    heroInView,
+    rewind10,
+    goToLive,
+    handleVolumeChange,
+    toggleMute,
+  } = usePlayer();
+  const { onAir } = useSchedule();
+  const programName = onAir?.name ?? "Espacio Sport 91.5";
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t-2 border-red-600 bg-neutral-950 shadow-[0_-4px_24px_rgba(220,38,38,0.15)]">
-      <audio ref={audioRef} src={STREAM_URL} preload="none" />
-      <div className="mx-auto flex max-w-screen-xl items-center gap-4 px-4 py-3 sm:py-3">
-
-        {/* Station info */}
+    <div
+      inert={heroInView}
+      className={`fixed inset-x-0 bottom-0 z-50 border-t border-chalk/25 bg-ink pb-[env(safe-area-inset-bottom,0px)] transition-transform duration-200 ease-out-expo motion-reduce:transition-none ${
+        heroInView ? "translate-y-full" : "translate-y-0"
+      }`}
+    >
+      <div className="mx-auto flex h-[72px] max-w-screen-xl items-center gap-3 px-4 sm:gap-4">
+        {/* Qué suena */}
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="shrink-0">
-            <Ping />
-          </div>
+          <LiveDot className="[--dot:11px] text-brand-hot" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold leading-tight">
-              {currentProgram}
+            <p className="truncate font-display text-xl font-extrabold uppercase leading-none tracking-wide">
+              {programName}
             </p>
-            <p className="text-xs text-neutral-400">Espacio Sport 91.5 FM</p>
+            <p className="mt-1 flex items-center gap-2 whitespace-nowrap font-mono text-xs uppercase tracking-wider text-chalk-dim">
+              {status === "idle" ? (
+                <span className="whitespace-nowrap">91.5 FM · Al aire</span>
+              ) : (
+                <StreamStatusText className="whitespace-nowrap text-brand-hot" />
+              )}
+              <Equalizer
+                playing={isPlaying && status === "idle"}
+                className="text-brand-hot"
+              />
+            </p>
           </div>
         </div>
 
-        {/* Controls */}
+        {/* Controles */}
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
+            type="button"
             onClick={rewind10}
-            className="hidden h-8 w-8 sm:flex"
             title="Retroceder 10 segundos"
+            aria-label="Retroceder 10 segundos"
+            className="press hidden h-11 w-11 place-items-center rounded-full text-chalk-dim hover:text-chalk sm:grid"
           >
             <SkipBack className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={togglePlay}
-            className="h-12 w-12 rounded-full bg-red-600 text-white hover:bg-red-500 sm:h-10 sm:w-10"
-          >
-            {isPlaying ? (
-              <Pause className="h-6 w-6 sm:h-5 sm:w-5" />
-            ) : (
-              <Play className="h-6 w-6 sm:h-5 sm:w-5" />
-            )}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
+          </button>
+          <PlayDisc className="h-14 w-14 sm:h-12 sm:w-12" iconClass="h-6 w-6" />
+          <button
+            type="button"
             onClick={goToLive}
-            className="hidden h-8 w-8 sm:flex"
             title="Ir al vivo"
+            aria-label="Ir al vivo"
+            className="press hidden h-11 w-11 place-items-center rounded-full text-brand-hot hover:text-chalk sm:grid"
           >
-            <Radio className="h-4 w-4 text-red-500" />
-          </Button>
+            <Radio className="h-4 w-4" />
+          </button>
         </div>
 
-        {/* Volume — desktop only; mute toggle on mobile */}
-        <div className="flex flex-1 items-center justify-end gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
+        {/* Volumen */}
+        <div className="flex items-center justify-end gap-2 sm:flex-1">
+          <button
+            type="button"
             onClick={toggleMute}
-            className="h-9 w-9 sm:h-8 sm:w-8"
+            aria-label={isMuted ? "Activar sonido" : "Silenciar"}
+            className="press grid h-11 w-11 place-items-center rounded-full text-chalk-dim hover:text-chalk"
           >
             {isMuted ? (
-              <VolumeX className="h-5 w-5 sm:h-4 sm:w-4" />
+              <VolumeX className="h-5 w-5" />
             ) : (
-              <Volume2 className="h-5 w-5 sm:h-4 sm:w-4" />
+              <Volume2 className="h-5 w-5" />
             )}
-          </Button>
+          </button>
           <Slider
+            aria-label="Volumen"
             value={[isMuted ? 0 : volume]}
             max={1}
             step={0.01}
             onValueChange={handleVolumeChange}
-            className="hidden w-20 sm:block"
+            className="hidden w-24 sm:flex"
           />
         </div>
       </div>

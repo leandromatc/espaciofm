@@ -39,6 +39,7 @@ export async function updateProgram(id: number, formData: FormData) {
       start_time: formData.get("start_time") as string,
       end_time: formData.get("end_time") as string,
       description: (formData.get("description") as string) || "",
+      ...eventExtras(formData),
     })
     .eq("id", id);
 
@@ -59,6 +60,15 @@ export async function deleteProgram(id: number) {
 
 // ─── Eventos especiales ────────────────────────────────────────
 
+// Campos opcionales de special_events (migración 004). El checkbox sin tildar no viaja en el form.
+function eventExtras(formData: FormData) {
+  const lugar = ((formData.get("lugar") as string) || "").trim();
+  return {
+    lugar: lugar || null,
+    en_cv10: formData.get("en_cv10") === "on",
+  };
+}
+
 export async function createSpecialEvent(formData: FormData) {
   const supabase = await createSupabaseServerClient();
 
@@ -68,6 +78,7 @@ export async function createSpecialEvent(formData: FormData) {
     start_time: formData.get("start_time") as string,
     end_time: formData.get("end_time") as string,
     description: (formData.get("description") as string) || "",
+    ...eventExtras(formData),
   });
 
   if (error) throw new Error(error.message);

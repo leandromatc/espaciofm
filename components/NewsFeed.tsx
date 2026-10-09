@@ -1,31 +1,41 @@
-import { fetchPublishedNews } from "@/utils/fetchNews";
-import { NewsCard, FeaturedNewsCard } from "@/components/NewsCard";
-import { Newspaper } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { dedupeNews, fetchPublishedNews } from "@/utils/fetchNews";
+import { NewsRow } from "@/components/NewsCard";
 
+const HOME_COUNT = 5;
+
+/** Noticias de la portada: lista chica y pareja, sin protagonismo. */
 export async function NewsFeed() {
-  const newsList = await fetchPublishedNews();
-
-  if (newsList.length === 0) {
-    return (
-      <div className="flex flex-col items-center gap-3 py-16 text-neutral-500">
-        <Newspaper className="h-10 w-10" />
-        <p className="text-sm">No hay noticias publicadas aún.</p>
-      </div>
-    );
-  }
-
-  const [featured, ...rest] = newsList;
+  // Se piden de más porque dedupeNews puede sacar repetidas
+  const newsList = dedupeNews(await fetchPublishedNews(12)).slice(0, HOME_COUNT);
 
   return (
-    <div className="flex flex-col gap-5">
-      <FeaturedNewsCard news={featured} />
-      {rest.length > 0 && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
-          {rest.map((news) => (
-            <NewsCard key={news.id} news={news} />
-          ))}
+    <section id="noticias" className="px-5 py-12 sm:py-16">
+      <div className="mx-auto max-w-screen-xl">
+        <div className="mb-4 flex items-end justify-between gap-4 border-b border-chalk/30 pb-3">
+          <h2 className="font-display text-4xl font-black uppercase leading-[0.9] sm:text-5xl">
+            Noticias
+          </h2>
+          <Link
+            href="/noticias"
+            className="tiza-link press inline-flex min-h-11 shrink-0 items-center gap-2 font-sans font-semibold text-sm uppercase tracking-wider"
+          >
+            Todas
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
-      )}
-    </div>
+
+        {newsList.length === 0 ? (
+          <p className="py-10 text-chalk-dim">No hay noticias publicadas todavía.</p>
+        ) : (
+          <ul className="divide-y divide-chalk/15">
+            {newsList.map((news) => (
+              <NewsRow key={news.id} news={news} />
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
   );
 }

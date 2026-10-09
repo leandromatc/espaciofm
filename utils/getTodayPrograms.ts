@@ -1,5 +1,6 @@
 import { fetchPrograms } from "./fetchPrograms";
 import { supabase } from "../lib/supabaseClient";
+import { montevideoNow } from "./montevideo";
 
 const fmt = (time: string) => time.slice(0, 5);
 
@@ -13,9 +14,8 @@ type SpecialEvent = {
 };
 
 export const getTodayPrograms = async () => {
-  const now = new Date();
-  const currentDay = now.toLocaleString("es-UY", { weekday: "long" });
-  const todayDate = now.toISOString().split("T")[0];
+  // Hora de Uruguay, no la del navegador ni UTC
+  const { day: currentDay, date: todayDate } = montevideoNow();
 
   const [programs, { data: rawSpecial }] = await Promise.all([
     fetchPrograms(),

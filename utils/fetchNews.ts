@@ -8,14 +8,28 @@ function getServerSupabase() {
   );
 }
 
-export async function fetchPublishedNews(): Promise<News[]> {
+/**
+ * Quita noticias repetidas (mismo título e imagen). Pasa cuando el formulario
+ * del panel se envía dos veces; el dato duplicado se borra desde el admin.
+ */
+export function dedupeNews(list: News[]): News[] {
+  const seen = new Set<string>();
+  return list.filter((n) => {
+    const key = `${n.title.trim().toLowerCase()}|${n.image_url ?? ""}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+export async function fetchPublishedNews(limit = 6): Promise<News[]> {
   const supabase = getServerSupabase();
   const { data, error } = await supabase
     .from("news")
     .select("*")
     .eq("published", true)
     .order("created_at", { ascending: false })
-    .limit(6);
+    .limit(limit);
 
   if (error) {
     console.error("Error fetching news:", error);

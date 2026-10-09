@@ -9,6 +9,8 @@ type SpecialEvent = {
   start_time?: string;
   end_time?: string;
   description?: string;
+  lugar?: string | null;
+  en_cv10?: boolean;
 };
 
 interface SpecialEventFormProps {
@@ -72,6 +74,28 @@ export function SpecialEventForm({
             />
           </Field>
         </div>
+
+        <Field label="Lugar">
+          <input
+            name="lugar"
+            defaultValue={initialData?.lugar ?? ""}
+            className={inputClass}
+            placeholder="Ej: Estadio Koster"
+          />
+          <p className="text-xs text-neutral-500">
+            Opcional. Se muestra en la portada junto al evento.
+          </p>
+        </Field>
+
+        <label className="flex cursor-pointer items-center gap-3 text-sm font-medium">
+          <input
+            type="checkbox"
+            name="en_cv10"
+            defaultChecked={initialData?.en_cv10 ?? false}
+            className="h-4 w-4 accent-red-600"
+          />
+          Se transmite por CV10 (video)
+        </label>
 
         <Field label="Descripción">
           <textarea

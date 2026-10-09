@@ -1,9 +1,29 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Archivo, Big_Shoulders_Display, Chivo_Mono } from "next/font/google";
 import "./globals.css";
 import { ConditionalPlayer } from "@/components/ConditionalPlayer";
+import { PlayerProvider } from "@/components/player/PlayerProvider";
+import { ScheduleProvider } from "@/components/schedule/ScheduleProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const display = Big_Shoulders_Display({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  variable: "--font-display",
+});
+const body = Archivo({ subsets: ["latin"], variable: "--font-body" });
+const mono = Chivo_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-mono",
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0a0a0a",
+  colorScheme: "dark",
+};
 
 export const metadata: Metadata = {
   title:
@@ -61,11 +81,16 @@ export default function RootLayout({
           sizes="512x512"
           href="/android-chrome-512x512.png"
         />
-        <meta name="theme-color" content="#ffffff" />
       </head>
-      <body className={`${inter.className} pb-[72px] antialiased`}>
-        {children}
-        <ConditionalPlayer />
+      <body
+        className={`${display.variable} ${body.variable} ${mono.variable} font-sans antialiased`}
+      >
+        <PlayerProvider>
+          <ScheduleProvider>
+            {children}
+            <ConditionalPlayer />
+          </ScheduleProvider>
+        </PlayerProvider>
       </body>
     </html>
   );

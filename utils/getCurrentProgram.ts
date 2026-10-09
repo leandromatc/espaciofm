@@ -1,5 +1,6 @@
 import { fetchPrograms } from "./fetchPrograms";
 import { supabase } from "../lib/supabaseClient";
+import { montevideoNow } from "./montevideo";
 
 const fmt = (time: string) => time.slice(0, 5);
 
@@ -13,13 +14,9 @@ type SpecialEvent = {
 };
 
 export const getCurrentProgram = async () => {
-  const now = new Date();
-  const currentDay = now.toLocaleString("es-UY", { weekday: "long" });
-  const todayDate = now.toISOString().split("T")[0];
-  const currentTime = `${now.getHours().toString().padStart(2, "0")}:${now
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`;
+  // Hora de Uruguay, no la del navegador ni UTC. Las filas guardan HH:MM:SS.
+  const { day: currentDay, date: todayDate, time } = montevideoNow();
+  const currentTime = `${time}:00`;
 
   const [programs, { data: rawSpecial }] = await Promise.all([
     fetchPrograms(),
@@ -27,11 +24,11 @@ export const getCurrentProgram = async () => {
   ]);
   const specialEvents = (rawSpecial ?? []) as SpecialEvent[];
 
+  // fetchPrograms devuelve HH:MM; se compara por HH:MM
+  const hhmm = time;
   const regularMatch = programs.find(
     (p) =>
-      p.days.includes(currentDay) &&
-      currentTime >= p.start_time &&
-      currentTime < p.end_time,
+      p.days.includes(currentDay) && hhmm >= p.start_time && hhmm < p.end_time,
   );
   if (regularMatch) return regularMatch;
 

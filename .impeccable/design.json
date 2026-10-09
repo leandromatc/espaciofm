@@ -1,0 +1,368 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-09T10:29:38.224Z",
+  "title": "Design System: 91.5 Espacio Sport FM - La planilla",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Scoreboard Black",
+        "canonical": "#0a0a0a",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#1d1d1d",
+          "#333333",
+          "#555555",
+          "#808080",
+          "#b4b4ae",
+          "#f5f5f2"
+        ]
+      },
+      "ink-raised": {
+        "role": "neutral",
+        "displayName": "Raised Black",
+        "canonical": "#1d1d1d",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#1d1d1d",
+          "#2a2a2a",
+          "#3a3a3a",
+          "#555555",
+          "#808080",
+          "#b4b4ae"
+        ]
+      },
+      "chalk": {
+        "role": "neutral",
+        "displayName": "Chalk",
+        "canonical": "#f5f5f2",
+        "tonalRamp": [
+          "#3c3c3a",
+          "#5e5e5b",
+          "#80807c",
+          "#a0a09b",
+          "#b4b4ae",
+          "#d0d0cb",
+          "#e4e4e0",
+          "#f5f5f2"
+        ]
+      },
+      "chalk-dim": {
+        "role": "neutral",
+        "displayName": "Dim Chalk",
+        "canonical": "#b4b4ae",
+        "tonalRamp": [
+          "#2d2d2b",
+          "#4a4a47",
+          "#686865",
+          "#868682",
+          "#9d9d98",
+          "#b4b4ae",
+          "#cfcfca",
+          "#e8e8e4"
+        ]
+      },
+      "brand": {
+        "role": "primary",
+        "displayName": "Logo Red",
+        "canonical": "#dc1717",
+        "tonalRamp": [
+          "#3a0606",
+          "#5c0a0a",
+          "#820e0e",
+          "#b01010",
+          "#dc1717",
+          "#ee4a4a",
+          "#f58a8a",
+          "#fbcaca"
+        ]
+      },
+      "brand-hot": {
+        "role": "secondary",
+        "displayName": "Hot Red",
+        "canonical": "#ff5252",
+        "tonalRamp": [
+          "#5c0a0a",
+          "#8a1010",
+          "#b81c1c",
+          "#dc1717",
+          "#ff5252",
+          "#ff7e7e",
+          "#ffaaaa",
+          "#ffd6d6"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White (on red only)",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#404040",
+          "#606060",
+          "#808080",
+          "#a0a0a0",
+          "#c0c0c0",
+          "#dcdcdc",
+          "#f0f0f0",
+          "#ffffff"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page h1, ad strip heading, CV10 ticket. Big Shoulders Display 900 uppercase."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section h2 over a chalk rule."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Program names, news titles, ticket titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Archivo copy and descriptions."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav, links, buttons: Archivo semibold uppercase."
+      },
+      "mono-label": {
+        "displayName": "Mono label",
+        "purpose": "Times, dates, minute counter, status words only."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "All motion easing."
+      },
+      {
+        "name": "press",
+        "value": "transform 120ms ease-out-expo; scale(0.97) on :active",
+        "purpose": "Every tappable sinks when pressed."
+      },
+      {
+        "name": "chalk-underline",
+        "value": "220ms, scaleX / background-size 0 to 100%, left to right",
+        "purpose": "Link and row hover/focus underline; hover only on fine pointers."
+      },
+      {
+        "name": "live-pulse",
+        "value": "1.8s infinite, ring scale 1 to 2.8, opacity .7 to 0",
+        "purpose": "Al aire dot."
+      },
+      {
+        "name": "equalizer",
+        "value": "5 bars, 640-1040ms alternate, only while playing",
+        "purpose": "Sound is playing. Starts on the audio playing event, never while connecting."
+      },
+      {
+        "name": "cinta",
+        "value": "45s linear infinite translateX(-50%), pauses on hover/focus",
+        "purpose": "Marquee tape."
+      },
+      {
+        "name": "tablero-in",
+        "value": "520ms, opacity 0 to 1, translateY(8px) to 0, once",
+        "purpose": "Tablero entrance."
+      },
+      {
+        "name": "bar-slide",
+        "value": "300ms translate-y",
+        "purpose": "Player bar hides while hero play is in view."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "pulse, equalizer, marquee, entrance, press and smooth scroll all disabled",
+        "purpose": "All motion respects prefers-reduced-motion."
+      },
+      {
+        "name": "banner-open",
+        "value": "grid-template-rows 0fr to 1fr, 300ms ease-out-expo, once",
+        "purpose": "Today banner opens when the schedule data arrives instead of pushing the page in one jump."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "container",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Play Disc",
+      "kind": "custom",
+      "refersTo": "play-disc",
+      "description": "Giant circular play control; red while playing.",
+      "html": "<button class=\"ds-play\" aria-label=\"Escuchar en vivo\"><svg viewBox=\"0 0 24 24\" width=\"40%\" aria-hidden=\"true\"><path d=\"M7 4v16l13-8z\" fill=\"currentColor\"/></svg></button>",
+      "css": ".ds-play{width:160px;height:160px;border-radius:9999px;border:0;display:grid;place-items:center;background:#f5f5f2;color:#0a0a0a;cursor:pointer;transition:transform 120ms cubic-bezier(0.23,1,0.32,1),background-color 160ms cubic-bezier(0.23,1,0.32,1)}.ds-play:active{transform:scale(0.97)}.ds-play:focus-visible{outline:2px solid #f5f5f2;outline-offset:3px}"
+    },
+    {
+      "name": "Live Badge",
+      "kind": "chip",
+      "refersTo": "status-badge-live",
+      "description": "Al aire status with pulsing dot.",
+      "html": "<span class=\"ds-live\"><i class=\"ds-dot\"></i>AL AIRE</span>",
+      "css": ".ds-live{display:inline-flex;align-items:center;gap:10px;background:#dc1717;color:#fff;padding:6px 12px;font-family:'Chivo Mono',monospace;font-size:14px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}.ds-dot{position:relative;width:10px;height:10px;border-radius:9999px;background:#fff}.ds-dot::before{content:'';position:absolute;inset:0;border-radius:inherit;background:#fff;animation:ds-pulse 1.8s cubic-bezier(0.23,1,0.32,1) infinite}@keyframes ds-pulse{0%{transform:scale(1);opacity:.7}80%,100%{transform:scale(2.8);opacity:0}}@media (prefers-reduced-motion:reduce){.ds-dot::before{animation:none;opacity:0}}"
+    },
+    {
+      "name": "Chalk Link",
+      "kind": "nav",
+      "refersTo": "label",
+      "description": "Navigation and text link with chalk underline drawn on hover.",
+      "html": "<a class=\"ds-link\" href=\"#\">Programacion</a>",
+      "css": ".ds-link{font-family:Archivo,Arial,sans-serif;font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:#f5f5f2;text-decoration:none;padding:4px 0;background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;background-position:0 100%;background-size:0% 2px;transition:background-size 220ms cubic-bezier(0.23,1,0.32,1)}.ds-link:hover,.ds-link:focus-visible{background-size:100% 2px}.ds-link:focus-visible{outline:2px solid #f5f5f2;outline-offset:3px}"
+    },
+    {
+      "name": "Contact Button",
+      "kind": "button",
+      "refersTo": "button-ink",
+      "description": "The single filled button, on the red strip.",
+      "html": "<a class=\"ds-btn\" href=\"#\">Escribinos por WhatsApp</a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;min-height:48px;padding:0 24px;background:#0a0a0a;color:#f5f5f2;font-family:Archivo,Arial,sans-serif;font-weight:700;font-size:14px;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:background-color 160ms cubic-bezier(0.23,1,0.32,1),color 160ms cubic-bezier(0.23,1,0.32,1),transform 120ms cubic-bezier(0.23,1,0.32,1)}.ds-btn:hover{background:#f5f5f2;color:#0a0a0a}.ds-btn:active{transform:scale(0.97)}.ds-btn:focus-visible{outline:2px solid #f5f5f2;outline-offset:3px}"
+    },
+    {
+      "name": "Schedule Row (live)",
+      "kind": "card",
+      "refersTo": "schedule-row-live",
+      "description": "Planilla row; live row inverted to chalk.",
+      "html": "<div class=\"ds-row\"><div class=\"ds-time\">18:00<small>a 20:00</small></div><div class=\"ds-name\">Espacio Deportivo</div><div class=\"ds-status\">AL AIRE</div></div>",
+      "css": ".ds-row{display:grid;grid-template-columns:7rem 1fr auto;align-items:center;gap:24px;padding:16px 20px;background:#f5f5f2;color:#0a0a0a}.ds-time{font-family:'Chivo Mono',monospace;font-weight:700;font-size:24px;line-height:1}.ds-time small{display:block;margin-top:4px;font-size:12px;font-weight:400;opacity:.7}.ds-name{font-family:'Big Shoulders Display','Arial Narrow',sans-serif;font-weight:800;font-size:36px;line-height:.95;text-transform:uppercase}.ds-status{font-family:'Chivo Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.05em;color:#dc1717}"
+    },
+    {
+      "name": "Ticket",
+      "kind": "card",
+      "refersTo": "ticket-white",
+      "description": "White event ticket with perforated stub (notches are masked in the build).",
+      "html": "<div class=\"ds-ticket\"><div><p class=\"ds-t\">Clasico local</p><p class=\"ds-m\">21:00 a 23:00</p></div><span class=\"ds-perf\"></span><div class=\"ds-stub\"><b>SAB</b><span>14</span><b class=\"ds-mo\">OCT</b></div></div>",
+      "css": ".ds-ticket{display:grid;grid-template-columns:1fr 2px 6.5rem;background:#f5f5f2;color:#0a0a0a;transform:rotate(1deg)}.ds-ticket>div:first-child{padding:20px}.ds-t{margin:0;font-family:'Big Shoulders Display','Arial Narrow',sans-serif;font-weight:900;font-size:36px;line-height:.95;text-transform:uppercase}.ds-m{margin:8px 0 0;font-family:'Chivo Mono',monospace;font-size:14px;letter-spacing:.05em;text-transform:uppercase;opacity:.7}.ds-perf{margin:12px 0;background-image:linear-gradient(to bottom,currentColor 50%,transparent 50%);background-size:2px 8px;opacity:.35}.ds-stub{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Chivo Mono',monospace;font-size:12px;text-transform:uppercase}.ds-stub span{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:60px;line-height:1}.ds-mo{color:#dc1717}"
+    },
+    {
+      "name": "Minute Counter",
+      "kind": "custom",
+      "refersTo": "mono-label",
+      "description": "Program minute with 12 flat segments.",
+      "html": "<div class=\"ds-min\"><p>MIN 42 DE 60</p><div class=\"ds-segs\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i></i><i></i><i></i><i></i><i></i></div></div>",
+      "css": ".ds-min p{margin:0 0 8px;font-family:'Chivo Mono',monospace;font-size:14px;letter-spacing:.05em;color:#b4b4ae}.ds-segs{display:flex;gap:4px;max-width:36rem}.ds-segs i{flex:1;height:12px;background:rgba(245,245,242,.2)}.ds-segs i.on{background:#dc1717}"
+    },
+    {
+      "name": "Marquee Tape",
+      "kind": "custom",
+      "refersTo": "marquee-tape",
+      "description": "Chalk tape with ink condensed text and red dot separators, plus a 44px pause button for touch users.",
+      "html": "<div class=\"ds-tape\"><div class=\"ds-tape-text\">AL AIRE: ESPACIO DEPORTIVO <i></i> SIGUE: NOTICIERO 20:00 <i></i> VIDEO EN VIVO POR CV10 <i></i></div><button class=\"ds-tape-pause\" aria-label=\"Pausar la cinta de novedades\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><rect x=\"6\" y=\"5\" width=\"4\" height=\"14\"/><rect x=\"14\" y=\"5\" width=\"4\" height=\"14\"/></svg></button></div>",
+      "css": ".ds-tape{position:relative;background:#f5f5f2;color:#0a0a0a;overflow:hidden;font-family:'Big Shoulders Display','Arial Narrow',sans-serif;font-weight:800;font-size:18px;letter-spacing:.05em;text-transform:uppercase}.ds-tape-text{white-space:nowrap;padding:10px 56px 10px 0}.ds-tape i{display:inline-block;width:8px;height:8px;margin:0 20px;border-radius:9999px;background:#dc1717}.ds-tape-pause{position:absolute;top:0;right:0;bottom:0;width:44px;display:grid;place-items:center;background:#f5f5f2;color:#0a0a0a;border:0;border-left:1px solid rgba(10,10,10,.2);cursor:pointer}.ds-tape-pause:focus-visible{outline:2px solid #0a0a0a;outline-offset:-4px}.ds-tape-pause:active{transform:scale(.97)}"
+    },
+    {
+      "name": "Today Banner",
+      "kind": "custom",
+      "refersTo": "today-banner",
+      "description": "Red band above the marquee when a special event is later today; white pill countdown in the last hour.",
+      "html": "<a class=\"ds-today\" href=\"#\"><span>Hoy: Praga vs Esparta · 19:30 · Estadio Koster</span><span class=\"ds-today-count\">Empieza en 45 min</span></a>",
+      "css": ".ds-today{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px 12px;min-height:44px;padding:8px 16px;background:#dc1717;color:#fff;text-align:center;font-family:Archivo,Arial,sans-serif;font-size:14px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:transform 120ms cubic-bezier(.23,1,.32,1)}.ds-today:active{transform:scale(.97)}.ds-today:focus-visible{outline:2px solid #f5f5f2;outline-offset:-4px}.ds-today-count{background:#fff;color:#dc1717;padding:2px 8px}"
+    },
+    {
+      "name": "Hero CV10 Button",
+      "kind": "button",
+      "refersTo": "hero-cv10-button",
+      "description": "Under the stream status line, only when the event on air is marked as broadcast on CV10.",
+      "html": "<a class=\"ds-cv10\" href=\"#\">Verlo en video · CV10 <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M7 17 17 7M8 7h9v9\"/></svg></a>",
+      "css": ".ds-cv10{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 24px;background:#dc1717;color:#fff;font-family:Archivo,Arial,sans-serif;font-size:14px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:transform 120ms cubic-bezier(.23,1,.32,1),background-color 160ms,color 160ms}.ds-cv10:hover{background:#f5f5f2;color:#0a0a0a}.ds-cv10:active{transform:scale(.97)}.ds-cv10:focus-visible{outline:2px solid #f5f5f2;outline-offset:3px}"
+    },
+    {
+      "name": "Stream Status Line",
+      "kind": "custom",
+      "refersTo": "label",
+      "description": "One line beside the play disc: Tocá para escuchar, Conectando…, Sonando with equalizer, Ir al vivo, or an error.",
+      "html": "<p class=\"ds-status\"><span class=\"ds-eq\"><i></i><i></i><i></i><i></i><i></i></span><span>Sonando</span></p>",
+      "css": ".ds-status{display:flex;min-height:44px;align-items:center;justify-content:center;gap:12px;margin:0;color:#f5f5f2;font-family:Archivo,Arial,sans-serif;font-size:14px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}.ds-eq{display:inline-flex;align-items:flex-end;gap:3px;height:22px;color:#ff5252}.ds-eq i{display:block;width:3px;height:100%;background:currentColor;transform-origin:bottom;animation:ds-eq 900ms ease-in-out infinite alternate}.ds-eq i:nth-child(2){animation-duration:1040ms}.ds-eq i:nth-child(3){animation-duration:640ms}.ds-eq i:nth-child(4){animation-duration:920ms}.ds-eq i:nth-child(5){animation-duration:820ms}@keyframes ds-eq{from{transform:scaleY(.2)}to{transform:scaleY(1)}}@media (prefers-reduced-motion:reduce){.ds-eq i{animation:none;transform:scaleY(.6)}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "La planilla",
+    "overview": "The site is the control desk of a neighbourhood match: the team sheet, the scoreboard, the ticket stub and the ticker tape. Everything is drawn from that world's own materials: a switched-off black board, chalk lines, white paper, and the red of the logo. Density is confident and typographic; surfaces are flat; motion is small and physical and is switched off under reduced motion. The palette (red, white, black) is a user decision; /admin is out of scope.",
+    "keyCharacteristics": [
+      "Black ground, chalk-white text, red used as a block or a status, not as decoration.",
+      "Condensed uppercase display type for every headline and program name.",
+      "Mono only for times, dates, the program-minute counter and status labels.",
+      "Chalk-line geometry: 1px rules, corner arcs, a centre-circle on the footer rule.",
+      "Tickets with punched notches and perforated stubs for events.",
+      "No hard shadows, no gradients as decoration, no icon-card grids, no kicker above headings.",
+      "State is said once, next to the control it belongs to: one status line under the play disc, one banner for what is coming today."
+    ],
+    "rules": [
+      {
+        "name": "The Three-Colour Rule",
+        "body": "Red, chalk, ink. No fourth hue, no tints beyond chalk alpha and dim chalk.",
+        "section": "colors"
+      },
+      {
+        "name": "The Red Is A Block Rule",
+        "body": "Logo red fills areas that carry white text; on ink, red text uses Hot Red.",
+        "section": "colors"
+      },
+      {
+        "name": "The Chalk Alpha Rule",
+        "body": "Rules and borders are chalk at 15% to 40% alpha, never grey.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Is A Scoreboard Rule",
+        "body": "Mono is reserved for times, dates, the minute counter and status labels. Navigation, links and buttons never use it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Condensed Caps Rule",
+        "body": "Display type is always uppercase, tight leading (0.85 to 1.02), balanced wrapping.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Shadow Rule",
+        "body": "No box-shadow, no glow, no gradient as decoration. Gradient syntax appears only as drawing technique.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep every surface to ink, chalk, logo red and Hot Red; red text on ink is always #ff5252.",
+      "Do set times, dates, the minute counter and status words in Chivo Mono, and nothing else.",
+      "Do set navigation, links and buttons in Archivo semibold uppercase with 0.05em tracking.",
+      "Do set headlines and program names in Big Shoulders Display, uppercase, leading 0.85 to 1.02.",
+      "Do separate sections with 1px chalk-alpha rules or a flat colour change.",
+      "Do use the 120ms press sink on every tappable and the ease-out cubic-bezier(0.23, 1, 0.32, 1) for all motion.",
+      "Do guard every animation with prefers-reduced-motion; the marquee becomes a scrollable strip.",
+      "Do hide the fixed player bar while the tablero play disc is in view.",
+      "Do keep /admin out of this system.",
+      "Do give anything that moves on its own for more than five seconds a visible pause control.",
+      "Do keep tappable targets at 44px or more, and let sizes of dots and equalizers come from custom properties instead of stray font sizes.",
+      "Do state the stream status once, in a single line beside the control."
+    ],
+    "donts": [
+      "Don't add box-shadows, glows or decorative gradients.",
+      "Don't build grids of equal cards with an icon on top; list services as ruled rows.",
+      "Don't place a kicker or eyebrow above a heading.",
+      "Don't use logo red as small text on ink.",
+      "Don't introduce a fourth hue or recolour the logo.",
+      "Don't round rectangles; round only things that are round in the world (disc, dots, rings).",
+      "Don't use mono for buttons, links or navigation.",
+      "Don't show two play controls at once.",
+      "Don't animate the equalizer before audio is playing, or let a red disc stand for a stream that is not sounding.",
+      "Don't put invented data in a venue, CV10 or contact slot: an empty field shows nothing."
+    ]
+  }
+}

@@ -2,25 +2,286 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  background-color: rgb(10, 10, 10);
-  scroll-behavior: smooth;
-}
-body {
-  @apply bg-white text-black dark:bg-neutral-950 dark:text-white;
-  font-family: "Inter", Arial, Helvetica, sans-serif;
-  background-image: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0.02) 1px,
-      transparent 1px
-    ),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 20px 20px; /* Tamaño de cada celda */
-  scroll-behavior: smooth;
+:root {
+  --radius: 0.5rem;
+  --ink: #0a0a0a;
+  --chalk: #f5f5f2;
+  --brand: #dc1717;
+  --cal: rgba(245, 245, 242, 0.2);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --bar-h: 72px;
 }
 
-@layer base {
-  :root {
-    --radius: 0.5rem;
+html {
+  background-color: var(--ink);
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+  /* Los thumbs de scroll son de la cancha, no del navegador */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 245, 242, 0.35) var(--ink);
+}
+
+body {
+  background-color: var(--ink);
+  color: var(--chalk);
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  /* Reserva para la barra fija del reproductor + zona segura del celular */
+  padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom, 0px));
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--brand);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--chalk);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+button,
+[role="button"] {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ink);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(245, 245, 242, 0.3);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+}
+
+/* ───────────────────────── La planilla ───────────────────────── */
+
+/* Línea de cal: regla de tiza con el círculo central de la cancha en el medio */
+.cal-rule {
+  position: relative;
+  height: 1px;
+  background: var(--cal);
+}
+.cal-rule::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  translate: -50% -50%;
+  border: 1px solid var(--cal);
+  border-radius: 9999px;
+  background: var(--ink);
+}
+
+/* Press: todo lo tocable se hunde un poco al apretar (100ms, ease-out) */
+.press {
+  transition: transform 120ms var(--ease-out), background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+/* Fila de la planilla: subrayado de tiza que se dibuja de izquierda a derecha */
+.fila {
+  position: relative;
+  transition: transform 120ms var(--ease-out), background-color 160ms var(--ease-out);
+}
+.fila::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--chalk);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms var(--ease-out);
+}
+.fila:active {
+  transform: translateY(1px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .fila:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Link con subrayado de tiza */
+.tiza-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 2px;
+  transition: background-size 220ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tiza-link:hover {
+    background-size: 100% 2px;
+  }
+}
+.tiza-link:focus-visible {
+  background-size: 100% 2px;
+}
+
+/* Punto AL AIRE: pulsa con un aro que se expande y se apaga */
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: var(--dot, 0.7em);
+  height: var(--dot, 0.7em);
+  border-radius: 9999px;
+  background: currentColor;
+  flex: none;
+}
+.live-dot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  animation: live-pulse 1.8s var(--ease-out) infinite;
+}
+@keyframes live-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  80%,
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+/* Ecualizador: 5 barras, cada una con su propio ritmo; solo se mueve si suena */
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: var(--eq-h, 1em);
+}
+.eq > i {
+  display: block;
+  width: 3px;
+  height: 100%;
+  background: currentColor;
+  transform-origin: bottom;
+  transform: scaleY(0.25);
+}
+.eq[data-playing="true"] > i {
+  animation: eq-level 900ms ease-in-out infinite alternate;
+}
+.eq[data-playing="true"] > i:nth-child(1) { animation-duration: 760ms; }
+.eq[data-playing="true"] > i:nth-child(2) { animation-duration: 1040ms; animation-delay: -300ms; }
+.eq[data-playing="true"] > i:nth-child(3) { animation-duration: 640ms; animation-delay: -120ms; }
+.eq[data-playing="true"] > i:nth-child(4) { animation-duration: 920ms; animation-delay: -520ms; }
+.eq[data-playing="true"] > i:nth-child(5) { animation-duration: 820ms; animation-delay: -220ms; }
+@keyframes eq-level {
+  from { transform: scaleY(0.2); }
+  to { transform: scaleY(1); }
+}
+
+/* Marquesina: la cinta corre a velocidad constante; el mouse sobre el texto la frena y el botón de pausa la controla */
+.cinta-track {
+  display: flex;
+  width: max-content;
+  animation: cinta 45s linear infinite;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cinta-track:hover {
+    animation-play-state: paused;
+  }
+}
+@keyframes cinta {
+  to { transform: translateX(-50%); }
+}
+
+/* Entrada: borde perforado entre el cuerpo y el talón */
+.entrada {
+  --notch: 9px;
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at var(--stub-x, 78%) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at var(--stub-x, 78%) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at var(--stub-x, 78%) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at var(--stub-x, 78%) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+}
+.entrada-perf {
+  background-image: linear-gradient(to bottom, currentColor 50%, transparent 50%);
+  background-size: 2px 8px;
+  background-repeat: repeat-y;
+  opacity: 0.35;
+}
+
+/* El tablero entra una sola vez, sin mover lo que se lee */
+@keyframes tablero-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.tablero-in {
+  animation: tablero-in 240ms var(--ease-out) both;
+}
+
+/* (7) Lo que está fuera de pantalla (barra fija inerte) no gasta animaciones */
+[inert] .live-dot::before,
+[inert] .eq[data-playing="true"] > i {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .live-dot::before {
+    animation: none;
+    opacity: 0;
+  }
+  .eq[data-playing="true"] > i {
+    animation: none;
+    transform: scaleY(0.6);
+  }
+  .cinta-track {
+    animation: none;
+  }
+  .cinta {
+    overflow-x: auto;
+  }
+  .tablero-in {
+    animation: none;
+  }
+  .press:active,
+  .fila:active {
+    transform: none;
+  }
+  [role="dialog"][data-state] {
+    --tw-enter-translate-x: 0 !important;
+    --tw-exit-translate-x: 0 !important;
+    --tw-enter-opacity: 0 !important;
+    --tw-exit-opacity: 0 !important;
   }
 }

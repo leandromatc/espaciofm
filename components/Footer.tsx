@@ -1,87 +1,99 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { CONTACT, MAPS_URL } from "@/lib/contact";
 
 const navLinks = [
   { href: "/", label: "Inicio" },
-  { href: "/#noticias", label: "Noticias" },
   { href: "/programacion", label: "Programación" },
-  { href: "/#servicios", label: "Servicios" },
-  { href: "/#sobre-nosotros", label: "Sobre nosotros" },
+  { href: "/noticias", label: "Noticias" },
+  { href: "/#pautar", label: "Pautá" },
 ];
 
 const Footer = () => {
+  const rows = [
+    { icon: MapPin, label: CONTACT.address, href: MAPS_URL as string | null },
+    CONTACT.phone && {
+      icon: Phone,
+      label: CONTACT.phone,
+      href: `tel:${CONTACT.phone.replace(/\s/g, "")}`,
+    },
+    CONTACT.whatsapp && {
+      icon: MessageCircle,
+      label: "WhatsApp",
+      href: `https://wa.me/${CONTACT.whatsapp}`,
+    },
+    CONTACT.email && {
+      icon: Mail,
+      label: CONTACT.email,
+      href: `mailto:${CONTACT.email}`,
+    },
+  ].filter(Boolean) as {
+    icon: typeof MapPin;
+    label: string;
+    href: string | null;
+  }[];
+
   return (
-    <footer className="border-t border-neutral-800/60 bg-neutral-900/40">
-      <div className="mx-auto max-w-screen-xl px-5 py-14">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
-          {/* Col 1: Brand */}
-          <div className="flex flex-col gap-4">
-            <Link href="/">
+    <footer>
+      <div className="mx-auto max-w-screen-xl px-5">
+        <div className="cal-rule" />
+      </div>
+      <div className="mx-auto max-w-screen-xl px-5 py-12 sm:py-16">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1.2fr]">
+          <div className="flex flex-col gap-5">
+            <Link href="/" className="press w-fit" aria-label="Inicio">
               <Image
                 src="/logo.png"
                 width={320}
                 height={160}
                 alt="Logo de Espacio Sport FM"
-                className="max-w-[160px] object-contain"
+                className="h-auto w-[200px]"
               />
             </Link>
-            <p className="text-sm leading-relaxed text-neutral-500">
-              La radio del deporte local en Mercedes, Soriano. Transmitiendo
-              desde 1999.
+            <p className="max-w-xs font-display text-3xl font-extrabold uppercase leading-[0.98]">
+              La radio del deporte local. Al aire desde 1999.
             </p>
           </div>
 
-          {/* Col 2: Links */}
-          <div>
-            <h6 className="mb-4 text-sm font-semibold uppercase tracking-wider text-neutral-300">
-              Navegación
-            </h6>
-            <ul className="flex flex-col gap-2">
+          <nav aria-label="Pie de página">
+            <ul className="flex flex-col">
               {navLinks.map(({ href, label }) => (
                 <li key={href}>
                   <Link
                     href={href}
-                    className="text-sm text-neutral-500 transition-colors hover:text-white"
+                    className="tiza-link press inline-flex min-h-11 items-center font-sans font-semibold text-sm uppercase tracking-wider text-chalk-dim hover:text-chalk"
                   >
                     {label}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          {/* Col 3: Contact */}
-          <div>
-            <h6 className="mb-4 text-sm font-semibold uppercase tracking-wider text-neutral-300">
-              Contacto
-            </h6>
-            <ul className="flex flex-col gap-3">
-              <li className="flex items-start gap-2.5 text-sm text-neutral-500">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-neutral-600" />
-                18 de Julio y Aldunate, Mercedes, Soriano
+          <ul className="flex flex-col gap-3">
+            {rows.map(({ icon: Icon, label, href }) => (
+              <li key={label} className="flex items-start gap-3 text-chalk-dim">
+                <Icon aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-brand-hot" />
+                {href ? (
+                  <a href={href} className="tiza-link inline-flex min-h-11 items-center text-chalk">
+                    {label}
+                  </a>
+                ) : (
+                  <span className="inline-flex min-h-11 items-center">{label}</span>
+                )}
               </li>
-              <li className="flex items-center gap-2.5 text-sm text-neutral-500">
-                <Phone className="h-4 w-4 shrink-0 text-neutral-600" />
-                <span>Teléfono</span>
-              </li>
-              <li className="flex items-center gap-2.5 text-sm text-neutral-500">
-                <Mail className="h-4 w-4 shrink-0 text-neutral-600" />
-                <span>Email</span>
-              </li>
-            </ul>
-          </div>
+            ))}
+          </ul>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-neutral-800/60 pt-6 sm:flex-row">
-          <p className="text-xs text-neutral-600">
-            © 2026 91.5 Espacio Sport FM · Mercedes, Uruguay
-          </p>
-          <p className="text-xs text-neutral-600">
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-chalk/20 pt-6 font-mono text-xs uppercase tracking-wider text-chalk-dim sm:flex-row sm:items-center">
+          <p>© 2026 91.5 Espacio Sport FM · Mercedes, Uruguay</p>
+          <p>
             Desarrollado por{" "}
             <Link
               href="https://beima.dev"
-              className="text-neutral-500 underline hover:text-neutral-300"
+              className="tiza-link inline-flex min-h-11 items-center text-chalk"
             >
               BeiMa Devs
             </Link>

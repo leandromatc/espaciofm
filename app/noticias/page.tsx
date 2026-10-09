@@ -1,7 +1,10 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { FeaturedNewsCard, NewsCard } from "@/components/NewsCard";
-import { fetchPublishedNewsPaginated } from "@/utils/fetchNews";
+import {
+  dedupeNews,
+  fetchPublishedNewsPaginated,
+} from "@/utils/fetchNews";
 import { Newspaper, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
@@ -20,7 +23,7 @@ function Pagination({
 }) {
   if (totalPages <= 1) return null;
 
-  // Build visible page numbers: always show first, last, current ±2, with ellipsis
+  // Páginas visibles: primera, última, la actual ±2, con puntos suspensivos
   const pages: (number | "...")[] = [];
   const delta = 2;
   const range: number[] = [];
@@ -41,33 +44,38 @@ function Pagination({
   if (range[range.length - 1] < totalPages - 1) pages.push("...", totalPages);
   else if (totalPages > 1) pages.push(totalPages);
 
+  const edge = (disabled: boolean) =>
+    `press grid h-11 w-11 place-items-center text-sm ${
+      disabled
+        ? "pointer-events-none text-chalk/25"
+        : "text-chalk-dim hover:bg-chalk hover:text-ink"
+    }`;
+
   return (
-    <nav className="flex items-center justify-center gap-1">
+    <nav aria-label="Páginas de noticias" className="flex items-center justify-center gap-1">
       <Link
         href={buildUrl(page - 1)}
+        aria-label="Página anterior"
         aria-disabled={page === 1}
-        className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm transition-colors ${
-          page === 1
-            ? "pointer-events-none text-neutral-700"
-            : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
-        }`}
+        className={edge(page === 1)}
       >
         <ChevronLeft className="h-4 w-4" />
       </Link>
 
       {pages.map((p, i) =>
         p === "..." ? (
-          <span key={`ellipsis-${i}`} className="px-1 text-sm text-neutral-600">
+          <span key={`ellipsis-${i}`} className="px-1 text-sm text-chalk/40">
             …
           </span>
         ) : (
           <Link
             key={p}
             href={buildUrl(p)}
-            className={`flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-sm font-medium transition-colors ${
+            aria-current={p === page ? "page" : undefined}
+            className={`press grid h-11 min-w-11 place-items-center px-2 font-sans font-semibold text-sm font-bold ${
               p === page
-                ? "bg-red-600 text-white"
-                : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
+                ? "bg-brand text-white"
+                : "text-chalk-dim hover:bg-chalk hover:text-ink"
             }`}
           >
             {p}
@@ -77,12 +85,9 @@ function Pagination({
 
       <Link
         href={buildUrl(page + 1)}
+        aria-label="Página siguiente"
         aria-disabled={page === totalPages}
-        className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm transition-colors ${
-          page === totalPages
-            ? "pointer-events-none text-neutral-700"
-            : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
-        }`}
+        className={edge(page === totalPages)}
       >
         <ChevronRight className="h-4 w-4" />
       </Link>
@@ -98,10 +103,12 @@ export default async function NoticiasPage({
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
 
-  const { data: newsList, total } = await fetchPublishedNewsPaginated(
+  const { data: rawNews, total } = await fetchPublishedNewsPaginated(
     page,
     PAGE_SIZE,
   );
+  // Si el panel guardó una nota dos veces, acá se muestra una sola
+  const newsList = dedupeNews(rawNews);
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   const isFirstPage = page === 1;
@@ -110,36 +117,35 @@ export default async function NoticiasPage({
   return (
     <>
       <Navbar />
-      <main className="px-5 py-12">
+      <main className="px-5 py-10 sm:py-14">
         <div className="mx-auto max-w-screen-xl">
-          {/* Header */}
-          <div className="mb-8 flex items-end justify-between">
-            <div>
-              <h1 className="text-2xl font-bold uppercase">Noticias</h1>
-              <span className="mt-1 block h-[2px] w-[50px] bg-red-600" />
-            </div>
+          <div className="mb-8 flex items-end justify-between gap-4 border-b border-chalk/30 pb-4">
+            <h1
+              className="font-display font-black uppercase leading-[0.88]"
+              style={{ fontSize: "clamp(3.25rem, 11.5vw, 6rem)" }}
+            >
+              Noticias
+            </h1>
             {total > 0 && (
-              <p className="text-sm text-neutral-500">
-                {total} {total === 1 ? "noticia" : "noticias"}
+              <p className="shrink-0 font-mono text-sm uppercase tracking-wider text-chalk-dim">
+                {total} {total === 1 ? "nota" : "notas"}
               </p>
             )}
           </div>
 
           {newsList.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-24 text-neutral-500">
+            <div className="flex flex-col items-center gap-3 py-24 text-chalk-dim">
               <Newspaper className="h-10 w-10" />
-              <p className="text-sm">No hay noticias publicadas aún.</p>
+              <p className="text-sm">No hay noticias publicadas todavía.</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-6">
-              {/* Featured — only on page 1 */}
+            <div className="flex flex-col gap-8">
               {isFirstPage && featured && (
                 <FeaturedNewsCard news={featured} />
               )}
 
-              {/* Grid */}
               {(isFirstPage ? rest : newsList).length > 0 && (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {(isFirstPage ? rest : newsList).map((news) => (
                     <NewsCard key={news.id} news={news} />
                   ))}
@@ -148,11 +154,10 @@ export default async function NoticiasPage({
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-12">
               <Pagination page={page} totalPages={totalPages} />
-              <p className="mt-3 text-center text-xs text-neutral-600">
+              <p className="mt-3 text-center font-mono text-xs uppercase tracking-wider text-chalk-dim">
                 Página {page} de {totalPages}
               </p>
             </div>

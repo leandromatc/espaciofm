@@ -1,10 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import { News } from "@/types/supabase";
 import { MarkdownEditor } from "@/components/admin/MarkdownEditor";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import Link from "next/link";
+
+// Bloquea el botón mientras se guarda: un doble clic creaba la noticia dos veces.
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="rounded-lg bg-red-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {pending ? "Guardando…" : "Guardar"}
+    </button>
+  );
+}
 
 interface NewsFormProps {
   initialData?: News;
@@ -98,12 +113,7 @@ export function NewsForm({ initialData, action, title }: NewsFormProps) {
         </div>
 
         <div className="flex gap-3">
-          <button
-            type="submit"
-            className="rounded-lg bg-red-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-500"
-          >
-            Guardar
-          </button>
+          <SubmitButton />
           <Link
             href="/admin/noticias"
             className="rounded-lg bg-neutral-800 px-6 py-2.5 text-sm font-medium text-neutral-300 hover:bg-neutral-700"

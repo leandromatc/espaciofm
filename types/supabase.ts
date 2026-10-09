@@ -14,6 +14,10 @@ export type Database = {
     start_time: string;
     end_time: string;
     description: string;
+    /** cancha o lugar (opcional) */
+    lugar: string | null;
+    /** se transmite en video por CV10 */
+    en_cv10: boolean;
   };
 };
 
