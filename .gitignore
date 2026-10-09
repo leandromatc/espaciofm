@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local / generated (no van al repo)
+.claude/settings.local.json
+.impeccable/review/
+.impeccable/critique/
+.impeccable/questions/
+.impeccable/live/
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+.agents/
+.codex/
+.aider-desk/
