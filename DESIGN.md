@@ -129,7 +129,7 @@ The site is the control desk of a neighbourhood match: the team sheet, the score
 
 Density is confident and typographic. Giant condensed uppercase names carry the hierarchy; times and scores are set in mono like a scoreboard. Surfaces are flat. Depth comes from contrast between ink, chalk and red, never from shadow. Motion is small and physical (a press sinks, a chalk underline is drawn, a ticker runs) and is switched off under reduced motion.
 
-The palette (red, white, black) is a user decision and the red is the unchanged logo red. The admin area (/admin) is out of scope and keeps its own neutral styling.
+The palette (red, white, black) is a user decision and the red is the unchanged logo red. The admin panel (/admin) is a separate Operate system with its own neutral look; see the Admin panel section at the end.
 
 **Key Characteristics:**
 - Black ground, chalk-white text, red used as a block or a status, not as decoration.
@@ -260,7 +260,7 @@ Chalk rule with a centre circle, logo, a display tagline, link list, contact lin
 - **Do** give anything that moves on its own for more than five seconds a visible pause control.
 - **Do** keep tappable targets at 44px or more, and let sizes of dots and equalizers come from custom properties instead of stray font sizes.
 - **Do** state the stream status once, in a single line beside the control.
-- **Do** keep /admin out of this system.
+- **Do** keep /admin on its own system (see Admin panel): none of the public tokens, display type or chalk geometry carry into it.
 
 ### Don't:
 - **Don't** add box-shadows, glows or decorative gradients.
@@ -273,3 +273,21 @@ Chalk rule with a centre circle, logo, a display tagline, link list, contact lin
 - **Don't** show two play controls at once.
 - **Don't** animate the equalizer before audio is playing, or let a red disc stand for a stream that is not sounding.
 - **Don't** put invented data in a venue, CV10 or contact slot: an empty field shows nothing.
+
+## Admin panel (/admin)
+
+A separate Operate surface for the radio team, built mobile first. It does not use the public site's world: neutral dark ground, thin-border cards, and the logo red only for the primary action and the active destination. Its components come from coss ui (built on Base UI), ported to Tailwind v3 inside `components/admin/ui/`; the public site is unaffected.
+
+**Tokens.** coss-style semantic colors live as `--a-*` RGB channels in `:root` (they are on `:root` because dialogs and toasts mount in `<body>`) and are mapped in `tailwind.config.ts` as `rgb(var(--a-x) / <alpha-value>)`: background `#0b0b0b`, card `#141414`, popover `#181818`, border `#2a2a2a`, input `#343434`, foreground `#f5f5f5`, muted foreground `#a3a3a3`, primary `#dc1717` with white text, and success, warning, info and destructive semantics for status. Type is Archivo for the interface and Chivo Mono only for times and dates, with tabular numerals. Radius is 8px on controls, 12px on cards, 16px on the bottom sheet. No decorative shadows or gradients; depth is a thin border plus value contrast.
+
+**Structure.** Mobile: a 56px top bar (logo, "Ver sitio") and a fixed 4-destination tab bar (Inicio, Noticias, Programación, Cuenta) with safe-area padding and a red 2px mark above the active item; the tab bar appears only on top-level screens. Form screens drop it and show a sticky Cancelar / Guardar bar instead, with a "Volver" link at the top. Desktop (lg): a fixed 16rem sidebar (card ground, full viewport height) with the logo and a divider, the destinations in three groups (Inicio; Contenido: Noticias, Programación; Ajustes: Cuenta) with small uppercase group labels, the active item with an accent fill, a 1px inset border and a red icon, and a footer with "Ver sitio" and a user card (initial, email, sign-out icon). The content sits in a column of up to 56rem. The public body padding reserved for the player bar is removed under the admin.
+
+**Components in use.** Button (44px on mobile, 36px from sm, loading state, red default), Input and Textarea (16px text on mobile so iOS does not zoom), Field with label, description and error, Switch (publishing, CV10), Checkbox, Badge (status: Publicada, Borrador, Radio, Radio + CV10, Solo en CV10), Card, Tabs as a segmented control (news filter; programs and events), DateField and TimeField (typed with a mask or picked in a Popover: a Spanish calendar that starts on Monday, and a 24-hour hour/minute list; the browser's native pickers are not used), AlertDialog as a bottom sheet on mobile and centered from sm (every delete goes through it and names the item), Toast for saved and error notices (bottom, above the tab bar), Skeleton for loading and Empty for empty states.
+
+**Patterns.** Lists are rows inside a card: the row is a link to edit, trailing icon buttons act (publish toggle, delete). Saving redirects with `?ok=guardado` and a toast confirms it. Dates and times are always Montevideo time. The Markdown editor is write-only on mobile (live preview from sm up), its toolbar is one scrollable row, and its theme is mapped to the admin tokens. Copy is rioplatense with voseo and says what to do next on errors.
+
+**Admin rules.**
+- **The One Red Rule.** Red marks the single primary action of a screen and the active destination; status uses the semantic colors.
+- **The Thumb Rule.** Primary actions sit at the bottom on mobile; targets are 44px; nothing is hidden behind hover.
+- **The Confirm Rule.** Nothing is deleted without a sheet that names what will be deleted.
+

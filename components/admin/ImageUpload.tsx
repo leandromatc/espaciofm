@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/admin/ui/button";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import ReactCrop, {
@@ -96,11 +97,11 @@ export function ImageUpload({
       body.append("file", file);
       const res = await fetch("/api/upload-image", { method: "POST", body });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Error desconocido");
+      if (!res.ok) throw new Error("upload");
       setUrl(json.url);
       setCropSrc("");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Error al subir imagen");
+    } catch {
+      setError("No se pudo subir la imagen. Probá de nuevo o con otra foto.");
     } finally {
       setUploading(false);
     }
@@ -116,37 +117,34 @@ export function ImageUpload({
     <>
       <input type="hidden" name={name} value={url} />
 
-      {/* Preview */}
+      {/* Vista previa */}
       {url && !cropSrc && (
-        <div className="flex flex-col gap-1.5">
-          <div className="group relative overflow-hidden rounded-lg">
+        <div className="flex flex-col gap-3">
+          <div className="relative overflow-hidden rounded-lg border border-border bg-muted">
             <Image
               src={url}
               alt="Vista previa"
               width={1280}
               height={720}
-              className="h-52 w-full object-cover"
+              className="aspect-video w-full object-cover"
             />
-            <div className="absolute inset-0 flex items-start justify-end gap-2 bg-neutral-950/0 p-2 transition-colors group-hover:bg-neutral-950/50">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="rounded-full bg-neutral-900/90 px-3 py-1.5 text-xs text-neutral-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-white"
-              >
-                Cambiar
-              </button>
-              <button
-                type="button"
-                onClick={() => setUrl("")}
-                className="rounded-full bg-neutral-900/90 p-1.5 text-neutral-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-white"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
           </div>
-          <p className="text-right text-[10px] text-neutral-600">
-            1280×720 · WebP/AVIF
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload aria-hidden />
+              Cambiar imagen
+            </Button>
+            <Button variant="ghost" onClick={() => setUrl("")}>
+              <X aria-hidden />
+              Quitar
+            </Button>
+            <p className="ml-auto text-xs text-muted-foreground">
+              1280×720 · WebP/AVIF
+            </p>
+          </div>
         </div>
       )}
 
@@ -166,10 +164,10 @@ export function ImageUpload({
             const file = e.dataTransfer.files[0];
             if (file) openFile(file);
           }}
-          className={`flex h-44 w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed transition-colors ${
+          className={`flex min-h-40 w-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed px-4 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
             dragOver
-              ? "border-red-600 bg-red-600/5 text-white"
-              : "border-neutral-700 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+              ? "border-primary bg-primary/5 text-foreground"
+              : "border-input text-muted-foreground hover:border-ring hover:text-foreground"
           }`}
         >
           {dragOver ? (
@@ -181,14 +179,14 @@ export function ImageUpload({
             <p className="text-sm">
               {dragOver ? "Soltar aquí" : "Subir imagen"}
             </p>
-            <p className="mt-0.5 text-xs text-neutral-600">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Elegís el área a recortar · convierte a WebP/AVIF
             </p>
           </div>
         </button>
       )}
 
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-destructive-foreground">{error}</p>}
 
       <input
         ref={fileInputRef}
@@ -204,12 +202,12 @@ export function ImageUpload({
 
       {/* Crop modal */}
       {cropSrc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/90 p-4">
-          <div className="flex w-full max-w-3xl flex-col gap-4 rounded-xl bg-neutral-900 p-5 shadow-2xl ring-1 ring-neutral-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+          <div className="flex w-full max-w-3xl flex-col gap-4 rounded-xl bg-card p-5 shadow-2xl border border-border">
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-semibold">Recortar imagen</h3>
-                <p className="mt-0.5 text-xs text-neutral-500">
+                <p className="mt-0.5 text-xs text-muted-foreground">
                   Arrastrá el recuadro para elegir qué parte mostrar (proporción
                   16:9)
                 </p>
@@ -217,14 +215,14 @@ export function ImageUpload({
               <button
                 type="button"
                 onClick={handleCancel}
-                className="rounded-lg p-1 text-neutral-400 hover:bg-neutral-800 hover:text-white"
+                className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <div
-              className="overflow-auto rounded-lg bg-neutral-950"
+              className="overflow-auto rounded-lg bg-background"
               style={{ maxHeight: "60vh" }}
             >
               <ReactCrop
@@ -251,14 +249,14 @@ export function ImageUpload({
             </div>
 
             <div className="flex items-center justify-between">
-              <p className="text-xs text-neutral-600">
+              <p className="text-xs text-muted-foreground">
                 El resultado será 1280×720 px
               </p>
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="rounded-lg bg-neutral-800 px-5 py-2.5 text-sm text-neutral-300 hover:bg-neutral-700"
+                  className="rounded-lg bg-secondary px-5 py-2.5 text-sm text-foreground hover:bg-secondary/80"
                 >
                   Cancelar
                 </button>
@@ -266,7 +264,7 @@ export function ImageUpload({
                   type="button"
                   onClick={handleApply}
                   disabled={uploading || !completedCrop}
-                  className="flex items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                 >
                   {uploading ? (
                     <>

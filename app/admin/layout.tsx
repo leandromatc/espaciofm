@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminShell } from "@/components/admin/AdminShell";
+
+export const metadata: Metadata = {
+  title: "Panel · Espacio Sport 91.5 FM",
+  robots: "noindex, nofollow",
+};
 
 export default async function AdminLayout({
   children,
@@ -12,13 +18,8 @@ export default async function AdminLayout({
     const { data } = await supabase.auth.getUser();
     email = data.user?.email ?? null;
   } catch {
-    // Si falla, mostramos el sidebar igual
+    // Si falla, mostramos el panel igual
   }
 
-  return (
-    <div className="flex h-screen flex-col overflow-hidden bg-neutral-950 lg:flex-row">
-      <AdminSidebar email={email} />
-      <main className="flex-1 overflow-auto p-6 lg:p-8">{children}</main>
-    </div>
-  );
+  return <AdminShell email={email}>{children}</AdminShell>;
 }

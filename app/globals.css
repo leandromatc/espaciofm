@@ -285,3 +285,90 @@ button,
     --tw-exit-opacity: 0 !important;
   }
 }
+
+/* ───────────────────────── Panel de administración ─────────────────────────
+   Tokens de coss ui (oscuro neutro) con el rojo del logo como primario.
+   Las variables viven en :root porque los diálogos y avisos se montan en <body>;
+   solo las usan las clases del admin, la portada pública no las referencia. */
+:root {
+  --a-background: 11 11 11;
+  --a-foreground: 245 245 245;
+  --a-card: 20 20 20;
+  --a-card-foreground: 245 245 245;
+  --a-popover: 24 24 24;
+  --a-popover-foreground: 245 245 245;
+  --a-primary: 220 23 23;
+  --a-primary-foreground: 255 255 255;
+  --a-secondary: 34 34 34;
+  --a-secondary-foreground: 245 245 245;
+  --a-muted: 28 28 28;
+  --a-muted-foreground: 163 163 163;
+  --a-accent: 36 36 36;
+  --a-accent-foreground: 245 245 245;
+  --a-destructive: 220 38 38;
+  --a-destructive-foreground: 248 113 113;
+  --a-border: 42 42 42;
+  --a-input: 52 52 52;
+  --a-ring: 163 163 163;
+  --a-success: 16 185 129;
+  --a-success-foreground: 52 211 153;
+  --a-warning: 245 158 11;
+  --a-warning-foreground: 251 191 36;
+  --a-info: 59 130 246;
+  --a-info-foreground: 96 165 250;
+}
+
+[data-admin] {
+  color-scheme: dark;
+  background-color: rgb(var(--a-background));
+  color: rgb(var(--a-foreground));
+}
+
+/* En el admin los números de las horas van en mono y alineados */
+[data-admin] .tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* El editor de Markdown trae botones de 20px: en el celular se agrandan para tocarlos */
+[data-admin] .w-md-editor-toolbar {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 4px;
+}
+[data-admin] .w-md-editor-toolbar ul {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  align-items: center;
+}
+[data-admin] .w-md-editor-toolbar li > button {
+  height: 36px;
+  min-width: 36px;
+  padding: 0 8px;
+  border-radius: 6px;
+}
+[data-admin] .w-md-editor-toolbar li > button svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* El editor trae su propio tema azulado: se alinea con los tokens neutros del admin */
+[data-admin] [data-color-mode*="dark"],
+[data-admin] [data-color-mode*="dark"] .wmde-markdown-var,
+[data-admin] .w-md-editor {
+  --color-canvas-default: rgb(var(--a-background));
+  --color-canvas-subtle: rgb(var(--a-muted));
+  --color-border-default: rgb(var(--a-border));
+  --color-border-muted: rgb(var(--a-border));
+  --color-neutral-muted: rgb(var(--a-accent));
+  --color-accent-fg: rgb(var(--a-foreground));
+  --color-fg-default: rgb(var(--a-foreground));
+  --color-fg-muted: rgb(var(--a-muted-foreground));
+}
+
+/* El padding inferior del body es para el reproductor fijo del sitio público: en el admin
+   agrandaba la página y desplazaba la barra lateral. */
+body:has([data-admin]) {
+  padding-bottom: 0;
+}

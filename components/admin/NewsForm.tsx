@@ -1,25 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useFormStatus } from "react-dom";
 import { News } from "@/types/supabase";
-import { MarkdownEditor } from "@/components/admin/MarkdownEditor";
+import { FormActions } from "@/components/admin/FormActions";
 import { ImageUpload } from "@/components/admin/ImageUpload";
-import Link from "next/link";
-
-// Bloquea el botón mientras se guarda: un doble clic creaba la noticia dos veces.
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="rounded-lg bg-red-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      {pending ? "Guardando…" : "Guardar"}
-    </button>
-  );
-}
+import { MarkdownEditor } from "@/components/admin/MarkdownEditor";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { Card, CardHeader, CardPanel, CardTitle } from "@/components/admin/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+} from "@/components/admin/ui/field";
+import { Input } from "@/components/admin/ui/input";
+import { Switch } from "@/components/admin/ui/switch";
+import { Textarea } from "@/components/admin/ui/textarea";
 
 interface NewsFormProps {
   initialData?: News;
@@ -32,121 +27,106 @@ export function NewsForm({ initialData, action, title }: NewsFormProps) {
   const [content, setContent] = useState(initialData?.content ?? "");
 
   return (
-    <div>
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{title}</h1>
-        <Link href="/admin/noticias" className="text-sm text-neutral-400 hover:text-white">
-          ← Volver
-        </Link>
-      </div>
+    <>
+      <PageHeader title={title} backHref="/admin/noticias" backLabel="Noticias" />
 
-      <form action={action} className="flex max-w-3xl flex-col gap-6">
+      <form action={action} className="flex flex-col gap-4">
         {/* Valores controlados por estado */}
         <input type="hidden" name="published" value={String(published)} />
         <input type="hidden" name="content" value={content} />
 
-        <Field label="Título *">
-          <input
-            name="title"
-            required
-            defaultValue={initialData?.title}
-            className={inputClass}
-            placeholder="Título de la noticia"
-          />
-        </Field>
+        <Card>
+          <CardPanel className="flex flex-col gap-5">
+            <Field>
+              <FieldLabel>Título</FieldLabel>
+              <Input
+                name="title"
+                required
+                defaultValue={initialData?.title}
+                placeholder="Título de la noticia"
+              />
+            </Field>
 
-        <Field label="Resumen" hint="Texto corto para la tarjeta (máx 200 caracteres)">
-          <textarea
-            name="excerpt"
-            rows={2}
-            maxLength={200}
-            defaultValue={initialData?.excerpt ?? ""}
-            className={inputClass}
-            placeholder="Descripción breve en texto plano..."
-          />
-        </Field>
+            <Field>
+              <FieldLabel>Resumen</FieldLabel>
+              <Textarea
+                name="excerpt"
+                rows={3}
+                maxLength={200}
+                defaultValue={initialData?.excerpt ?? ""}
+                placeholder="Una o dos líneas para la portada…"
+              />
+              <FieldDescription>
+                Texto corto para la tarjeta. Máximo 200 caracteres.
+              </FieldDescription>
+            </Field>
 
-        <Field label="Imagen">
-          <ImageUpload name="image_url" defaultValue={initialData?.image_url} />
-        </Field>
+            <div role="group" aria-labelledby="contenido-label" className="flex flex-col gap-2">
+              <p id="contenido-label" className="text-sm font-medium">
+                Contenido
+              </p>
+              <MarkdownEditor value={content} onChange={setContent} />
+              <p className="text-xs text-muted-foreground">Soporta Markdown.</p>
+            </div>
+          </CardPanel>
+        </Card>
 
-        <Field label="Contenido *" hint="Soporta Markdown">
-          <MarkdownEditor value={content} onChange={setContent} />
-        </Field>
+        <Card>
+          <CardHeader>
+            <CardTitle>Imagen</CardTitle>
+          </CardHeader>
+          <CardPanel>
+            <ImageUpload name="image_url" defaultValue={initialData?.image_url} />
+          </CardPanel>
+        </Card>
 
-        <Field label="Link de audio" hint="URL de RadioCut u otro servicio">
-          <input
-            name="audio_url"
-            type="url"
-            defaultValue={initialData?.audio_url ?? ""}
-            className={inputClass}
-            placeholder="https://radiocut.fm/audiocut/..."
-          />
-        </Field>
+        <Card>
+          <CardHeader>
+            <CardTitle>Audio (opcional)</CardTitle>
+          </CardHeader>
+          <CardPanel className="flex flex-col gap-5">
+            <Field>
+              <FieldLabel>Link del audio</FieldLabel>
+              <Input
+                name="audio_url"
+                type="url"
+                inputMode="url"
+                defaultValue={initialData?.audio_url ?? ""}
+                placeholder="https://radiocut.fm/audiocut/…"
+              />
+              <FieldDescription>De RadioCut u otro servicio.</FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>Texto del botón</FieldLabel>
+              <Input
+                name="audio_label"
+                defaultValue={initialData?.audio_label ?? "Escuchar nota"}
+                placeholder="Escuchar nota"
+              />
+            </Field>
+          </CardPanel>
+        </Card>
 
-        <Field label="Etiqueta del audio">
-          <input
-            name="audio_label"
-            defaultValue={initialData?.audio_label ?? "Escuchar nota"}
-            className={inputClass}
-            placeholder="Escuchar nota"
-          />
-        </Field>
+        <Card>
+          <CardPanel>
+            <Field>
+              <FieldLabel className="flex w-full items-center justify-between gap-4">
+                <span className="flex flex-col gap-0.5">
+                  <span>{published ? "Publicada" : "Borrador"}</span>
+                  <span className="text-xs font-normal text-muted-foreground">
+                    {published
+                      ? "Se ve en el sitio."
+                      : "No se ve en el sitio hasta que la publiques."}
+                  </span>
+                </span>
+                <Switch checked={published} onCheckedChange={setPublished} />
+              </FieldLabel>
+            </Field>
+          </CardPanel>
+        </Card>
 
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setPublished((p) => !p)}
-            className={`relative h-6 w-11 rounded-full transition-colors ${
-              published ? "bg-red-600" : "bg-neutral-700"
-            }`}
-          >
-            <span
-              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-                published ? "translate-x-5" : "translate-x-0.5"
-              }`}
-            />
-          </button>
-          <span className="text-sm">
-            {published ? "Publicada" : "Borrador"}
-          </span>
-        </div>
-
-        <div className="flex gap-3">
-          <SubmitButton />
-          <Link
-            href="/admin/noticias"
-            className="rounded-lg bg-neutral-800 px-6 py-2.5 text-sm font-medium text-neutral-300 hover:bg-neutral-700"
-          >
-            Cancelar
-          </Link>
-        </div>
+        <FormActions cancelHref="/admin/noticias" />
       </form>
-    </div>
-  );
-}
-
-const inputClass =
-  "w-full rounded-lg bg-neutral-800 px-3 py-2.5 text-sm outline-none ring-1 ring-inset ring-neutral-700 focus:ring-red-600 placeholder:text-neutral-600 resize-none";
-
-function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium">
-        {label}
-        {hint && (
-          <span className="ml-2 font-normal text-neutral-500">{hint}</span>
-        )}
-      </label>
-      {children}
-    </div>
+    </>
   );
 }

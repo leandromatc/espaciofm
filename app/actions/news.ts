@@ -30,7 +30,7 @@ export async function createNews(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/noticias");
-  redirect("/admin/noticias");
+  redirect("/admin/noticias?ok=guardado");
 }
 
 export async function updateNews(id: string, formData: FormData) {
@@ -64,7 +64,7 @@ export async function updateNews(id: string, formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/admin/noticias");
   revalidatePath(`/noticias/${id}`);
-  redirect("/admin/noticias");
+  redirect("/admin/noticias?ok=guardado");
 }
 
 export async function deleteNews(id: string) {

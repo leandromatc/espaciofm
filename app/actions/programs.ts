@@ -24,7 +24,7 @@ export async function createProgram(formData: FormData) {
   revalidatePath("/programacion");
   revalidatePath("/admin");
   revalidatePath("/admin/programacion");
-  redirect("/admin/programacion");
+  redirect("/admin/programacion?ok=guardado");
 }
 
 export async function updateProgram(id: number, formData: FormData) {
@@ -48,7 +48,7 @@ export async function updateProgram(id: number, formData: FormData) {
   revalidatePath("/programacion");
   revalidatePath("/admin");
   revalidatePath("/admin/programacion");
-  redirect("/admin/programacion");
+  redirect("/admin/programacion?ok=guardado");
 }
 
 export async function deleteProgram(id: number) {
@@ -88,7 +88,7 @@ export async function createSpecialEvent(formData: FormData) {
   revalidatePath("/programacion");
   revalidatePath("/admin");
   revalidatePath("/admin/programacion");
-  redirect("/admin/programacion");
+  redirect("/admin/programacion?tab=eventos&ok=guardado");
 }
 
 export async function updateSpecialEvent(id: number, formData: FormData) {
@@ -111,7 +111,7 @@ export async function updateSpecialEvent(id: number, formData: FormData) {
   revalidatePath("/programacion");
   revalidatePath("/admin");
   revalidatePath("/admin/programacion");
-  redirect("/admin/programacion");
+  redirect("/admin/programacion?tab=eventos&ok=guardado");
 }
 
 export async function deleteSpecialEvent(id: number) {
