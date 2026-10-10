@@ -184,13 +184,13 @@ A three-colour board: black, chalk, red, plus one lighter red for small text.
 
 Single column of full-width bands inside a max-width of 1280px (`max-w-screen-xl`) with 20px side padding (16px on the home tablero). Vertical rhythm between bands is 48px on mobile and 64px on larger screens; the red advertising strip gets 56px to 80px. Bands are separated by chalk rules or by a colour change, not by cards.
 
-Home order: today banner (only when an event is coming later today), marquee tape, sticky nav, tablero (what is on air, play, stream status, minute counter, what follows), planilla (today's schedule as ruled rows), tickets (CV10 and events, 7/5 column split on desktop), news rows, red advertising strip, footer. Mobile first: the play disc sits between title and "what follows"; on large screens it moves to a right column. Rows use a fixed time column (4.75rem, 7rem from the small breakpoint), a flexible name column and a right-aligned status column.
+Home order: today banner (only when an event is coming later today), marquee tape, sticky nav, tablero (what is on air, play, stream status, minute counter, what follows), planilla (today's schedule as ruled rows), tickets (CV10 and events, 7/5 column split on desktop), the video band, news rows, red advertising strip, footer. Mobile first: the play disc sits between title and "what follows"; on large screens it moves to a right column. Rows use a fixed time column (4.75rem, 7rem from the small breakpoint), a flexible name column and a right-aligned status column.
 
 The body reserves 72px (plus the device safe area) at the bottom for the fixed player bar. Touch targets are at least 44px (logo, nav and footer links, bar buttons, the marquee pause and the stream-status button 44px; contact and CV10 buttons 48px). Inline text links inside a sentence are the only exception.
 
 ## Elevation & Depth
 
-Flat. There are no shadows anywhere in the public site. Depth is conveyed by value contrast (white tape and white tickets on black, a red block on black), by 1px chalk borders, by the notched ticket silhouette, and by a small tilt on tickets (-1deg, 1deg, -0.5deg) that flattens on hover. The player bar is separated by a 1px chalk border-top and a slide transition, not by a shadow.
+Flat. There are no shadows anywhere in the public site. Depth is conveyed by value contrast (white tape and white tickets on black, a red block on black), by 1px chalk borders, by the notched ticket silhouette, and by a small tilt on tickets (-1deg, 1deg, -0.5deg); only the red CV10 ticket straightens on hover. The player bar is separated by a 1px chalk border-top and a slide transition, not by a shadow.
 
 ### Named Rules
 **The No Shadow Rule.** No box-shadow, no glow, no gradient as decoration. Gradient syntax appears only as drawing technique (the chalk underline, the ticket perforation, the notch masks).
@@ -211,7 +211,7 @@ The signature control. Circle, chalk with ink icon at rest, logo red with white 
 "Min 42 de 60" in mono Dim Chalk over 12 flat segments (12px high, 4px gap), filled in logo red, empty at chalk/20.
 
 ### Marquee tape
-Chalk band with ink Big Shoulders text at 1.125rem, items separated by 8px red dots, running at constant speed (45s) and pausing on hover and focus. Carries what is on air, what follows, the upcoming broadcast, CV10 and the station line. A 44px chalk pause button with a 1px ink/20 divider is fixed at its right end so touch users can stop it (WCAG 2.2.2); it is hidden under reduced motion, where the tape is a static scrollable strip.
+Chalk band with ink Big Shoulders text at 1.125rem, items separated by 8px red dots, running at constant speed (45s), paused until the schedule has loaded so it never jumps, and paused while a fine pointer is over the text. Carries what is on air, what follows, the upcoming broadcast, CV10 and the station line. A 44px chalk pause button with a 1px ink/20 divider is fixed at its right end so touch users can stop it (WCAG 2.2.2); it is hidden under reduced motion, where the tape is a static scrollable strip.
 
 ### Today banner
 A full-width logo-red band above the marquee, shown only when a special event is later today. Archivo bold uppercase 0.875rem in white: "Hoy: [event] · [time] · [venue]". In the last hour a white pill with red text adds "Empieza en N min" (minute resolution, "Ya empieza" under a minute). The whole band is a link to the tickets section. It opens once with a 300ms height transition when the data arrives, and takes no space when there is no event.
@@ -229,16 +229,19 @@ Time column in mono, name in Title display, status in mono. The live row inverts
 White tickets (events) and one larger red ticket (CV10) with white text. Grid of body, perforation, stub; the stub of event tickets shows weekday, big day number and month, and the body adds the venue when the event has one. The red ticket carries an arrow icon that nudges on hover.
 
 ### Buttons and links
-No filled button family beyond one contact button: ink background, chalk text, 48px high, Archivo semibold uppercase, inverting to chalk with ink text on hover (sits on the red strip). When no phone, WhatsApp or email is set, the contact action is the studio address as a chalk-underline link to a map. Everything else is a chalk-underline text link (Archivo semibold uppercase, 2px underline drawn left to right on hover and focus, hover only on fine pointers). All tappables sink to 0.97 scale on press in 120ms.
+No filled button family beyond one contact button: ink background, chalk text, 48px high, Archivo semibold uppercase, inverting to chalk with ink text on hover (sits on the red strip). When no phone, WhatsApp or email is set, the contact action is the studio address as a chalk-underline link to a map. Everything else is a chalk-underline text link (Archivo semibold uppercase, 2px underline drawn left to right on hover and focus, hover only on fine pointers). All tappables sink to 0.97 scale on press in 120ms (the tilted CV10 ticket sinks to 0.98 in 200ms and keeps its tilt).
 
 ### Navigation
-Sticky ink bar under the marquee, logo left (120px to 140px) followed by a 1px chalk/30 divider and the line "La radio del deporte de Mercedes" in Archivo semibold Dim Chalk (0.75rem sentence case on mobile, 0.875rem uppercase from the small breakpoint), links right in Archivo semibold uppercase 0.875rem; inactive Dim Chalk, active chalk with the underline held open. On mobile a right-hand sheet at 88% width (max 24rem) lists Inicio and the links in 2.25rem display type separated by chalk rules; its close button is 44px with a chalk focus outline.
+Sticky ink bar under the marquee, logo left (120px to 140px) followed by a 1px chalk/30 divider and the line "La radio del deporte de Mercedes" in Archivo semibold Dim Chalk (0.75rem sentence case on mobile, 0.875rem uppercase from the small breakpoint), links right in Archivo semibold uppercase 0.875rem; inactive Dim Chalk, active chalk with the underline held open. On mobile a right-hand sheet at 88% width (max 24rem) lists Inicio and the links in 2.25rem display type separated by chalk rules; its close button is 44px with a chalk focus outline. It opens in 300ms; under reduced motion it only fades and does not slide.
 
 ### Player bar
 Fixed bottom, 72px, ink with a 1px chalk border-top. Shows live dot, program name, status line in mono, equalizer, rewind, play disc, go-to-live, mute and volume slider (volume and skip hidden on mobile). It slides away and becomes inert while the tablero play disc is at least 60% in view, so two identical play buttons are never on screen.
 
 ### News rows and cards
 Rows: mono date column, Title display headline (two lines max), one-line excerpt from the small breakpoint, 64px to 112px thumbnail, untreated. Cards: 1px chalk/25 border, 16:9 image, date in mono, title with chalk underline. The featured note uses a 1px chalk/30 frame and a two-column split.
+
+### Video band
+"Programas en video": a Headline h2 with a "Ver canal" text link at its right (its accessible name carries the channel owner) (it wraps under the heading on mobile). On desktop a 1.6/1 split: the selected video in a 16:9 frame with a 1px chalk/30 border, then date in mono and the title in Title display, and an "Abrir en YouTube" text link; on the right a ruled list of the latest five videos (date in mono, title in Title display up to three lines, 16:9 thumbnail 96px to 112px wide). On mobile the frame comes first and the list below. At rest the frame shows the video thumbnail with a logo-red block label "Ver el programa" at its bottom-left corner: a rectangular label, never a round play disc, so it cannot be mistaken for the radio play control. The YouTube player (privacy mode) loads only when a video or a row is tapped, and starting a video pauses the radio. The selected row carries a 1px chalk outlined "Viendo" tag. If the feed returns nothing the band is not rendered.
 
 ### Footer
 Chalk rule with a centre circle, logo, a display tagline, link list, contact lines with small icons in Hot Red (the address links to a map), and a mono legal line.

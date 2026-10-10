@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-09T10:29:38.224Z",
+  "generatedAt": "2026-10-10T16:37:26.550Z",
   "title": "Design System: 91.5 Espacio Sport FM - La planilla",
   "extensions": {
     "colorMeta": {
@@ -151,7 +151,7 @@
       {
         "name": "chalk-underline",
         "value": "220ms, scaleX / background-size 0 to 100%, left to right",
-        "purpose": "Link and row hover/focus underline; hover only on fine pointers."
+        "purpose": "Underline on link rows (news, menu) and text links; hover only on fine pointers. Rows that are not links have no hover motion."
       },
       {
         "name": "live-pulse",
@@ -165,17 +165,17 @@
       },
       {
         "name": "cinta",
-        "value": "45s linear infinite translateX(-50%), pauses on hover/focus",
-        "purpose": "Marquee tape."
+        "value": "45s linear infinite translateX(-50%); paused until data loads",
+        "purpose": "Marquee tape. Paused by a 44px button, or while a fine pointer is over the text."
       },
       {
         "name": "tablero-in",
-        "value": "520ms, opacity 0 to 1, translateY(8px) to 0, once",
+        "value": "240ms, opacity 0 to 1, translateY(6px) to 0, once",
         "purpose": "Tablero entrance."
       },
       {
         "name": "bar-slide",
-        "value": "300ms translate-y",
+        "value": "200ms translate-y, ease-out-expo",
         "purpose": "Player bar hides while hero play is in view."
       },
       {
@@ -187,6 +187,11 @@
         "name": "banner-open",
         "value": "grid-template-rows 0fr to 1fr, 300ms ease-out-expo, once",
         "purpose": "Today banner opens when the schedule data arrives instead of pushing the page in one jump."
+      },
+      {
+        "name": "sheet-open",
+        "value": "300ms slide from the right; fade only under reduced motion",
+        "purpose": "Mobile menu sheet."
       }
     ],
     "breakpoints": [

@@ -19,6 +19,8 @@ type SpecialEvent = {
   start_time: string;
   end_time: string;
   description: string;
+  lugar: string | null;
+  en_cv10: boolean;
 };
 
 async function getData() {
@@ -50,7 +52,9 @@ export default async function AdminProgramacionPage() {
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Programas semanales</h1>
-            <p className="text-sm text-neutral-500">{programs.length} programas</p>
+            <p className="text-sm text-neutral-500">
+              {programs.length} programas
+            </p>
           </div>
           <Link
             href="/admin/programacion/nuevo"
@@ -104,7 +108,7 @@ export default async function AdminProgramacionPage() {
       </section>
 
       {/* ── Eventos especiales ──────────────────────── */}
-      <section>
+      <section id="eventos-especiales" className="scroll-mt-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Eventos especiales</h1>
@@ -130,17 +134,27 @@ export default async function AdminProgramacionPage() {
                 <p className="flex items-center gap-1.5 text-sm text-neutral-400">
                   <Calendar className="h-3.5 w-3.5" />
                   {e.date
-                    ? new Date(e.date + "T00:00:00").toLocaleDateString("es-UY", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })
+                    ? new Date(e.date + "T00:00:00").toLocaleDateString(
+                        "es-UY",
+                        {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        },
+                      )
                     : "—"}
                   {" · "}
                   {fmt(e.start_time)} – {fmt(e.end_time)}
                 </p>
                 {e.description && (
                   <p className="text-xs text-neutral-500">{e.description}</p>
+                )}
+                {(e.lugar || e.en_cv10) && (
+                  <p className="mt-1 text-xs text-neutral-500">
+                    {e.lugar}
+                    {e.lugar && e.en_cv10 ? " · " : ""}
+                    {e.en_cv10 ? "Transmisión por CV10" : ""}
+                  </p>
                 )}
               </div>
               <div className="flex shrink-0 items-center gap-1">

@@ -28,6 +28,7 @@ export async function createNews(formData: FormData) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath("/admin/noticias");
   redirect("/admin/noticias");
 }
@@ -60,6 +61,7 @@ export async function updateNews(id: string, formData: FormData) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath("/admin/noticias");
   revalidatePath(`/noticias/${id}`);
   redirect("/admin/noticias");
@@ -70,6 +72,7 @@ export async function deleteNews(id: string) {
   const { error } = await supabase.from("news").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath("/admin/noticias");
 }
 
@@ -81,5 +84,6 @@ export async function togglePublished(id: string, published: boolean) {
     .eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath("/admin/noticias");
 }

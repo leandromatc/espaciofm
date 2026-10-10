@@ -22,6 +22,7 @@ export async function createProgram(formData: FormData) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/programacion");
+  revalidatePath("/admin");
   revalidatePath("/admin/programacion");
   redirect("/admin/programacion");
 }
@@ -39,13 +40,13 @@ export async function updateProgram(id: number, formData: FormData) {
       start_time: formData.get("start_time") as string,
       end_time: formData.get("end_time") as string,
       description: (formData.get("description") as string) || "",
-      ...eventExtras(formData),
     })
     .eq("id", id);
 
   if (error) throw new Error(error.message);
 
   revalidatePath("/programacion");
+  revalidatePath("/admin");
   revalidatePath("/admin/programacion");
   redirect("/admin/programacion");
 }
@@ -55,6 +56,7 @@ export async function deleteProgram(id: number) {
   const { error } = await supabase.from("programming").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/programacion");
+  revalidatePath("/admin");
   revalidatePath("/admin/programacion");
 }
 
@@ -84,6 +86,7 @@ export async function createSpecialEvent(formData: FormData) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/programacion");
+  revalidatePath("/admin");
   revalidatePath("/admin/programacion");
   redirect("/admin/programacion");
 }
@@ -99,12 +102,14 @@ export async function updateSpecialEvent(id: number, formData: FormData) {
       start_time: formData.get("start_time") as string,
       end_time: formData.get("end_time") as string,
       description: (formData.get("description") as string) || "",
+      ...eventExtras(formData),
     })
     .eq("id", id);
 
   if (error) throw new Error(error.message);
 
   revalidatePath("/programacion");
+  revalidatePath("/admin");
   revalidatePath("/admin/programacion");
   redirect("/admin/programacion");
 }
@@ -114,5 +119,6 @@ export async function deleteSpecialEvent(id: number) {
   const { error } = await supabase.from("special_events").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/programacion");
+  revalidatePath("/admin");
   revalidatePath("/admin/programacion");
 }

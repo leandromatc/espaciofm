@@ -6,6 +6,7 @@ import { Tablero } from "@/components/home/Tablero";
 import { Planilla } from "@/components/home/Planilla";
 import { Entradas } from "@/components/home/Entradas";
 import Pauta from "@/components/home/Pauta";
+import { VideosFeed } from "@/components/home/VideosFeed";
 
 // La portada es estática (ISR): solo las noticias vienen del servidor y se regeneran
 // al guardar en el admin (revalidatePath("/")) o, como red de seguridad, cada 5 minutos.
@@ -19,6 +20,13 @@ export default function Home() {
       <Tablero />
       <Planilla />
       <Entradas />
+      <Suspense
+        fallback={
+          <div aria-hidden className="mx-auto h-72 max-w-screen-xl px-5" />
+        }
+      >
+        <VideosFeed />
+      </Suspense>
       <Suspense
         fallback={
           <div aria-hidden className="mx-auto h-72 max-w-screen-xl px-5" />
