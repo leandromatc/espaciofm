@@ -7,6 +7,7 @@ import { Planilla } from "@/components/home/Planilla";
 import { Entradas } from "@/components/home/Entradas";
 import Pauta from "@/components/home/Pauta";
 import { VideosFeed } from "@/components/home/VideosFeed";
+import { AudiosFeed } from "@/components/home/AudiosFeed";
 
 // La portada es estática (ISR): solo las noticias vienen del servidor y se regeneran
 // al guardar en el admin (revalidatePath("/")) o, como red de seguridad, cada 5 minutos.
@@ -26,6 +27,9 @@ export default function Home() {
         }
       >
         <VideosFeed />
+      </Suspense>
+      <Suspense fallback={null}>
+        <AudiosFeed />
       </Suspense>
       <Suspense
         fallback={

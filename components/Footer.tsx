@@ -6,6 +6,7 @@ import { CONTACT, MAPS_URL } from "@/lib/contact";
 const navLinks = [
   { href: "/", label: "Inicio" },
   { href: "/programacion", label: "Programación" },
+  { href: "/mas-que-deportes", label: "Más que deportes" },
   { href: "/noticias", label: "Noticias" },
   { href: "/#pautar", label: "Pautá" },
 ];
