@@ -28,7 +28,7 @@ const Navbar = () => {
     <>
       <FranjaHoy />
       <Marquesina />
-      <nav className="sticky top-0 z-40 border-b border-chalk/20 bg-ink pt-[env(safe-area-inset-top,0px)]">
+      <nav data-chrome className="sticky top-0 z-40 border-b border-chalk/20 bg-ink pt-[env(safe-area-inset-top,0px)]">
         <div className="mx-auto flex max-w-screen-xl items-center justify-between px-5 py-3">
           <div className="flex min-w-0 items-center gap-3 sm:gap-4">
             <Link href="/" className="press flex min-h-11 shrink-0 items-center" aria-label="Espacio Sport 91.5 FM, inicio">

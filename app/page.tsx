@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { Dial } from "@/components/Dial";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { NewsFeed } from "@/components/NewsFeed";
@@ -23,7 +24,9 @@ export default function Home() {
       <Entradas />
       <Suspense
         fallback={
-          <div aria-hidden className="mx-auto h-72 max-w-screen-xl px-5" />
+          <div className="mx-auto grid h-72 max-w-screen-xl place-items-center px-5">
+            <Dial compact className="max-w-xs" />
+          </div>
         }
       >
         <VideosFeed />
@@ -33,7 +36,9 @@ export default function Home() {
       </Suspense>
       <Suspense
         fallback={
-          <div aria-hidden className="mx-auto h-72 max-w-screen-xl px-5" />
+          <div className="mx-auto grid h-72 max-w-screen-xl place-items-center px-5">
+            <Dial compact className="max-w-xs" />
+          </div>
         }
       >
         <NewsFeed />

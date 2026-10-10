@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Big_Shoulders_Display, Chivo_Mono } from "next/font/google";
 import "./globals.css";
+import { Intro } from "@/components/Intro";
+import { PageTransitions } from "@/components/PageTransitions";
 import { ConditionalPlayer } from "@/components/ConditionalPlayer";
 import { PlayerProvider } from "@/components/player/PlayerProvider";
 import { ScheduleProvider } from "@/components/schedule/ScheduleProvider";
@@ -49,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="dark">
+    <html lang="es" className="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" />
         <link
@@ -85,6 +87,8 @@ export default function RootLayout({
       <body
         className={`${display.variable} ${body.variable} ${mono.variable} font-sans antialiased`}
       >
+        <Intro />
+        <PageTransitions />
         <PlayerProvider>
           <ScheduleProvider>
             {children}

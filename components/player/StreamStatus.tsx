@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { usePlayer } from "./PlayerProvider";
 import { Equalizer } from "./Equalizer";
+import { Dial } from "@/components/Dial";
 
 /** Avisa (sin gritar) cuando el stream conecta o falla. Vacío si todo va bien. */
 export function StreamStatusText({ className = "" }: { className?: string }) {
@@ -11,7 +12,7 @@ export function StreamStatusText({ className = "" }: { className?: string }) {
     status === "error"
       ? "No se pudo conectar. Probá de nuevo."
       : status === "connecting" && isPlaying
-        ? "Conectando…"
+        ? "Sintonizando…"
         : "";
   return (
     <span role="status" aria-live="polite" className={className}>
@@ -35,7 +36,12 @@ export function HeroStatus() {
       </span>
     );
   } else if (isPlaying && status === "connecting") {
-    content = <span>Conectando…</span>;
+    content = (
+      <>
+        <Dial compact className="w-32" />
+        <span>Sintonizando…</span>
+      </>
+    );
   } else if (isPlaying) {
     content = (
       <>

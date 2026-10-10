@@ -33,6 +33,7 @@ export function FranjaHoy() {
     // grid 0fr -> 1fr: la franja se abre una sola vez cuando llegan los datos,
     // en vez de empujar todo de golpe
     <div
+      data-chrome
       inert={!show}
       aria-hidden={!show || undefined}
       className={`grid transition-[grid-template-rows] duration-300 ease-out-expo motion-reduce:transition-none ${

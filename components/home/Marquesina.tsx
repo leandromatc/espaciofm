@@ -62,6 +62,7 @@ export function Marquesina() {
 
   return (
     <div
+      data-chrome
       className="cinta relative overflow-hidden bg-chalk"
       role="region"
       aria-label={items.slice(0, 2).join(". ")}

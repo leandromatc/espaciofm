@@ -415,3 +415,103 @@ body:has([data-admin]) {
   outline: 2px solid #f5f5f2;
   outline-offset: 2px;
 }
+
+/* Dial de sintonía: la aguja (en unidades del viewBox, 0–200) busca la señal y se clava en
+   91.5 (x = 35). Arranca y termina en 35, así el bucle no pega saltos. */
+@keyframes dial-buscar {
+  0% { transform: translateX(35px); animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1); }
+  32% { transform: translateX(188px); animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1); }
+  62% { transform: translateX(12px); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  84%, 100% { transform: translateX(35px); }
+}
+.dial-aguja {
+  transform: translateX(35px);
+  animation: dial-buscar 2.6s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dial-aguja {
+    animation: none;
+  }
+}
+
+/* Intro del sitio: una pasada del dial al entrar (una vez por pestaña, ver Intro.tsx).
+   Tapa sin bloquear: no captura toques y se desvanece sola por CSS. */
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: #0a0a0a;
+  pointer-events: none;
+  animation: intro-out 340ms ease-out 1.8s forwards;
+}
+@keyframes intro-out {
+  to { opacity: 0; visibility: hidden; }
+}
+#intro .dial-aguja {
+  animation: dial-buscar 1.4s 1 both;
+}
+.intro-freq {
+  opacity: 0;
+  animation: intro-freq 320ms var(--ease-out) 1s forwards;
+}
+@keyframes intro-freq {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+html[data-intro="visto"] #intro,
+body:has([data-admin]) #intro {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  #intro {
+    display: none;
+  }
+}
+
+/* Transición entre páginas (app/template.tsx + PageTransitions.tsx), al estilo de las
+   transiciones por capas: la página actual se desvanece y la nueva entra bloque por bloque,
+   de arriba hacia abajo. El menú (data-chrome), la franja y el player no se mueven.
+   Las animaciones sueltan el transform al terminar (fill backwards) para no atrapar
+   elementos fijos. No aplica en el panel de administración ni con "reducir movimiento". */
+@keyframes bloque-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.page-in > main > *:not([data-chrome]),
+.page-in > footer {
+  --i: 8;
+  animation: bloque-in 460ms var(--ease-out) backwards;
+  animation-delay: calc(var(--i) * 70ms);
+}
+.page-in > footer { --i: 4; }
+.page-in > main > :nth-child(1) { --i: 0; }
+.page-in > main > :nth-child(2) { --i: 1; }
+.page-in > main > :nth-child(3) { --i: 2; }
+.page-in > main > :nth-child(4) { --i: 3; }
+.page-in > main > :nth-child(5) { --i: 4; }
+.page-in > main > :nth-child(6) { --i: 5; }
+.page-in > main > :nth-child(7) { --i: 6; }
+.page-in > main > :nth-child(8) { --i: 7; }
+/* Primera visita: los bloques esperan a que la intro se retire */
+html[data-intro="playing"] .page-in > main > *:not([data-chrome]),
+html[data-intro="playing"] .page-in > footer {
+  animation-delay: calc(1.7s + var(--i) * 70ms);
+}
+/* Salida: lo que no es menú se desvanece rápido (ease-in) */
+html[data-leaving] .page-in > main > *:not([data-chrome]),
+html[data-leaving] .page-in > footer {
+  opacity: 0;
+  transition: opacity 200ms cubic-bezier(0.4, 0, 1, 1);
+}
+.page-in:has([data-admin]) > main > *,
+.page-in:has([data-admin]) > footer {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-in > main > *:not([data-chrome]),
+  .page-in > footer {
+    animation: none;
+  }
+}
