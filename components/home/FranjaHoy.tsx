@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import { MEDIO_LABEL, medioOf } from "@/lib/medio";
 import {
   useSchedule,
   type Slot,
@@ -41,12 +42,13 @@ export function FranjaHoy() {
       <div className="overflow-hidden">
         {event && (
           <Link
-            href="/#transmisiones"
+            href="/#planilla"
             className="press flex min-h-11 flex-wrap items-center justify-center gap-x-3 gap-y-0.5 bg-brand px-4 py-2 text-center font-sans text-sm font-bold uppercase tracking-wider text-white"
           >
             <span>
               Hoy: {event.name} · {event.start}
               {event.lugar ? ` · ${event.lugar}` : ""}
+              {` · ${MEDIO_LABEL[medioOf(event.enRadio, event.enCv10)]}`}
             </span>
             {cuenta && (
               <span

@@ -27,7 +27,7 @@ function Corner({ className }: { className: string }) {
  */
 export function Tablero() {
   const { setHeroInView } = usePlayer();
-  const { ready, onAir, liveEvent, next, progress } = useSchedule();
+  const { ready, onAir, liveEvent, liveVideoOnly, next, progress } = useSchedule();
   const playRef = useRef<HTMLDivElement>(null);
 
   // Mientras el play grande se ve, la barra fija se esconde
@@ -138,6 +138,18 @@ export function Tablero() {
               />
             </div>
             <HeroStatus />
+            {liveVideoOnly && (
+              <a
+                href={CV10_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="press mt-1 inline-flex min-h-12 max-w-full flex-wrap items-center justify-center gap-x-2 bg-brand px-6 py-2 text-center font-sans text-sm font-bold uppercase tracking-wider text-white hover:bg-chalk hover:text-ink"
+              >
+                Ahora por CV10: {liveVideoOnly.name}
+                <ArrowUpRight aria-hidden className="h-4 w-4" />
+                <span className="sr-only">(se abre en otra pestaña)</span>
+              </a>
+            )}
             {liveEvent?.enCv10 && (
               <a
                 href={CV10_URL}

@@ -2,6 +2,7 @@
 
 import { useSchedule } from "@/components/schedule/ScheduleProvider";
 import { toMinutes } from "@/utils/montevideo";
+import { MEDIO_LABEL, medioOf, radioIdsOf } from "@/lib/medio";
 
 export type EventoEspecial = {
   id: number;
@@ -25,6 +26,7 @@ export function EventosEspeciales({ events }: { events: EventoEspecial[] }) {
   const { nowLabel, nowMinutes } = useSchedule();
   if (!nowLabel.date) return null;
 
+  const radioIds = radioIdsOf(events);
   const upcoming = events.filter(
     (e) =>
       e.date > nowLabel.date ||
@@ -68,11 +70,13 @@ export function EventosEspeciales({ events }: { events: EventoEspecial[] }) {
                   {fmt(event.start_time)} a {fmt(event.end_time)}
                   {event.lugar ? ` · ${event.lugar}` : ""}
                 </p>
-                {event.en_cv10 && (
-                  <p className="mt-1.5 font-sans text-xs font-bold uppercase tracking-wider text-brand-hot">
-                    También en video por CV10
-                  </p>
-                )}
+                <p
+                  className={`mt-1.5 font-sans text-xs font-bold uppercase tracking-wider ${
+                    event.en_cv10 ? "text-brand-hot" : "text-chalk-dim"
+                  }`}
+                >
+                  {MEDIO_LABEL[medioOf(radioIds.has(event.id), event.en_cv10)]}
+                </p>
                 {event.description && (
                   <p className="mt-1.5 line-clamp-2 text-sm text-chalk-dim">
                     {event.description}

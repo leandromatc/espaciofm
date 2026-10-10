@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { LiveDot } from "@/components/player/LiveDot";
 import { useSchedule } from "@/components/schedule/ScheduleProvider";
 import { toMinutes } from "@/utils/montevideo";
+import { MEDIO_LABEL, medioOf } from "@/lib/medio";
 
 export function Planilla() {
   const { ready, today, onAir, next, nowLabel, nowMinutes: nowMin } = useSchedule();
@@ -112,8 +113,18 @@ export function Planilla() {
                       </span>
                     )}
                     {slot.isSpecial && !past && (
-                      <span className={live ? "text-ink" : "text-brand-hot"}>
-                        Especial
+                      <span
+                        className={
+                          slot.enCv10
+                            ? live
+                              ? "text-brand"
+                              : "text-brand-hot"
+                            : live
+                              ? "text-ink"
+                              : "text-chalk-dim"
+                        }
+                      >
+                        {MEDIO_LABEL[medioOf(slot.enRadio, slot.enCv10)]}
                       </span>
                     )}
                   </div>

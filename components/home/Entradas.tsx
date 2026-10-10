@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { useSchedule, type Slot } from "@/components/schedule/ScheduleProvider";
 import { CV10_URL } from "@/lib/contact";
+import { MEDIO_LABEL, medioOf } from "@/lib/medio";
 
 const STUB = "6.5rem";
 
@@ -36,6 +37,11 @@ function Entrada({ slot, tilt }: { slot: Slot; tilt: string }) {
             {slot.lugar}
           </p>
         )}
+        <p className="mt-3">
+          <span className="inline-block bg-brand px-2 py-1 font-sans text-xs font-bold uppercase tracking-wider text-white">
+            {MEDIO_LABEL[medioOf(slot.enRadio, slot.enCv10)]}
+          </span>
+        </p>
         {slot.description && (
           <p className="mt-2 line-clamp-2 text-sm text-ink/75">
             {slot.description}
@@ -60,12 +66,14 @@ function Entrada({ slot, tilt }: { slot: Slot; tilt: string }) {
 
 export function Entradas() {
   const { ready, upcoming } = useSchedule();
+  // Esta sección es solo para lo que se ve en video; los partidos solo de radio están en la planilla
+  const cv10 = upcoming.filter((s) => s.enCv10).slice(0, 4);
 
   return (
     <section id="transmisiones" className="px-5 py-12 sm:py-16">
       <div className="mx-auto max-w-screen-xl">
         <h2 className="mb-8 border-b border-chalk/30 pb-3 font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">
-          Próximas transmisiones
+          Partidos por CV10
         </h2>
 
         <div className="grid gap-6 lg:grid-cols-12 lg:items-start lg:gap-8">
@@ -92,8 +100,7 @@ export function Entradas() {
                 El partido, también en video
               </p>
               <p className="mt-4 max-w-md text-base text-white">
-                Mirá el básquet y el fútbol local en vivo, y seguí escuchando la
-                radio.
+                Estos partidos se ven en video. Los que dicen Radio + CV10 también suenan por la radio.
               </p>
             </div>
             <span aria-hidden className="entrada-perf my-4" />
@@ -110,9 +117,9 @@ export function Entradas() {
 
           {/* Eventos especiales cargados en el panel */}
           <div className="lg:col-span-5">
-            {ready && upcoming.length > 0 ? (
+            {ready && cv10.length > 0 ? (
               <ul className="flex flex-col gap-5">
-                {upcoming.map((slot, i) => (
+                {cv10.map((slot, i) => (
                   <Entrada
                     key={slot.key}
                     slot={slot}
@@ -123,8 +130,8 @@ export function Entradas() {
             ) : (
               ready && (
                 <p className="text-chalk-dim lg:pt-4">
-                  Sin partido anunciado por ahora. Cuando haya, lo ves acá.
-                  Mientras tanto, mirá la{" "}
+                  Sin partidos por CV10 anunciados por ahora. Mirá la planilla de hoy
+                  y la{" "}
                   <Link href="/programacion" className="tiza-link text-chalk">
                     grilla de la semana
                   </Link>

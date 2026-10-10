@@ -11,6 +11,7 @@ import {
 import { fetchPrograms } from "@/utils/fetchPrograms";
 import { supabase } from "@/lib/supabaseClient";
 import { DAYS, montevideoNow, toMinutes } from "@/utils/montevideo";
+import { radioIdsOf } from "@/lib/medio";
 
 export type Slot = {
   key: string;
@@ -25,6 +26,8 @@ export type Slot = {
   lugar?: string | null;
   /** el evento tiene video por CV10, solo eventos especiales */
   enCv10?: boolean;
+  /** suena por la radio, solo eventos especiales (false = solo CV10) */
+  enRadio?: boolean;
 };
 
 type Program = {
@@ -60,6 +63,8 @@ type ScheduleState = {
   current: Slot | null;
   /** evento especial en curso ahora (tiene prioridad sobre la grilla) */
   liveEvent: Slot | null;
+  /** evento en curso que va solo por CV10: la radio sigue con su programa */
+  liveVideoOnly: Slot | null;
   /** primer evento especial de hoy que todavía no empezó */
   todayEvent: Slot | null;
   /** minutos que faltan para todayEvent */
@@ -151,6 +156,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
         today: [],
         current: null,
         liveEvent: null,
+        liveVideoOnly: null,
         todayEvent: null,
         minutesToEvent: null,
         onAir: null,
@@ -162,6 +168,8 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
       };
     }
     const now = montevideoNow(new Date(tick));
+    // qué eventos suenan por la radio (se deduce del horario y de CV10)
+    const radioIds = radioIdsOf(specials);
 
     const slotsFor = (day: string, date: string): Slot[] => {
       const regular: Slot[] = programs
@@ -175,7 +183,8 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
           isSpecial: false,
         }));
       const special: Slot[] = specials
-        .filter((e) => e.date === date)
+        // la grilla es de la radio: los eventos solo de CV10 no entran
+        .filter((e) => e.date === date && radioIds.has(e.id))
         .map((e) => ({
           key: `s-${e.id}`,
           name: e.name.trim(),
@@ -185,7 +194,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
           isSpecial: true,
           date: e.date,
           lugar: e.lugar?.trim() || null,
-          enCv10: e.en_cv10 === true,
+          enCv10: e.en_cv10 === true, enRadio: radioIds.has(e.id),
         }));
       return [...regular, ...special].sort((a, b) =>
         a.start.localeCompare(b.start),
@@ -208,15 +217,31 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
       ) ??
       null;
 
-    // Eventos especiales de hoy: el que está en curso manda sobre la grilla
-    const eventsToday = today.filter((s) => s.isSpecial);
-    const liveEvent =
-      eventsToday.find(
-        (s) =>
-          now.minutes >= toMinutes(s.start) && now.minutes < toMinutes(s.end),
-      ) ?? null;
+    // Eventos especiales de hoy, de cualquier medio. La radio transmite uno a la vez:
+    // el que está en curso por radio manda sobre la grilla; si va solo por CV10, el
+    // héroe sigue con el programa y se ofrece el video.
+    const specialsToday: Slot[] = specials
+      .filter((e) => e.date === now.date)
+      .map((e) => ({
+        key: `s-${e.id}`,
+        name: e.name.trim(),
+        description: e.description ?? "",
+        start: hhmm(e.start_time),
+        end: hhmm(e.end_time),
+        isSpecial: true,
+        date: e.date,
+        lugar: e.lugar?.trim() || null,
+        enCv10: e.en_cv10 === true,
+        enRadio: radioIds.has(e.id),
+      }))
+      .sort((a, b) => a.start.localeCompare(b.start));
+    const isLive = (s: Slot) =>
+      now.minutes >= toMinutes(s.start) && now.minutes < toMinutes(s.end);
+    const liveEvent = specialsToday.find((s) => s.enRadio && isLive(s)) ?? null;
+    const liveVideoOnly =
+      specialsToday.find((s) => !s.enRadio && s.enCv10 && isLive(s)) ?? null;
     const todayEvent =
-      eventsToday.find((s) => toMinutes(s.start) > now.minutes) ?? null;
+      specialsToday.find((s) => toMinutes(s.start) > now.minutes) ?? null;
     const minutesToEvent = todayEvent
       ? toMinutes(todayEvent.start) - now.minutes
       : null;
@@ -243,7 +268,6 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
           e.date > now.date ||
           (e.date === now.date && toMinutes(hhmm(e.end_time)) > now.minutes),
       )
-      .slice(0, 4)
       .map<Slot>((e) => ({
         key: `s-${e.id}`,
         name: e.name.trim(),
@@ -253,7 +277,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
         isSpecial: true,
         date: e.date,
         lugar: e.lugar?.trim() || null,
-        enCv10: e.en_cv10 === true,
+        enCv10: e.en_cv10 === true, enRadio: radioIds.has(e.id),
       }));
 
     const progress = onAir
@@ -268,6 +292,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
       today,
       current,
       liveEvent,
+      liveVideoOnly,
       todayEvent,
       minutesToEvent,
       onAir,
