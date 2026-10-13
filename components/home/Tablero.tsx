@@ -6,6 +6,7 @@ import { usePlayer } from "@/components/player/PlayerProvider";
 import { PlayDisc } from "@/components/player/PlayDisc";
 import { LiveDot } from "@/components/player/LiveDot";
 import { HeroStatus } from "@/components/player/StreamStatus";
+import { RemotePlaybackButton } from "@/components/player/RemotePlaybackButton";
 import { useSchedule } from "@/components/schedule/ScheduleProvider";
 import { CV10_URL } from "@/lib/contact";
 
@@ -138,6 +139,7 @@ export function Tablero() {
               />
             </div>
             <HeroStatus />
+            <RemotePlaybackButton variant="label" />
             {liveVideoOnly && (
               <a
                 href={CV10_URL}

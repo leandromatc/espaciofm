@@ -7,6 +7,7 @@ import { PlayDisc } from "@/components/player/PlayDisc";
 import { Equalizer } from "@/components/player/Equalizer";
 import { LiveDot } from "@/components/player/LiveDot";
 import { StreamStatusText } from "@/components/player/StreamStatus";
+import { RemotePlaybackButton } from "@/components/player/RemotePlaybackButton";
 import { useSchedule } from "@/components/schedule/ScheduleProvider";
 
 /**
@@ -83,6 +84,7 @@ export function AudioPlayerBar() {
 
         {/* Volumen */}
         <div className="flex items-center justify-end gap-2 sm:flex-1">
+          <RemotePlaybackButton />
           <button
             type="button"
             onClick={toggleMute}

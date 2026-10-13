@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  useCallback,
   createContext,
+  useEffect,
   useContext,
   useRef,
   useState,
@@ -14,6 +16,20 @@ import {
 export const STREAM_URL = "https://medios.ciudaddigital.com.uy:18098/EspacioFM";
 
 export type StreamStatus = "idle" | "connecting" | "error";
+export type RemotePlaybackStatus =
+  | "unavailable"
+  | "available"
+  | "connecting"
+  | "connected";
+
+type AirPlayAudio = HTMLAudioElement & {
+  webkitCurrentPlaybackTargetIsWireless?: boolean;
+  webkitShowPlaybackTargetPicker?: () => void;
+};
+
+type AirPlayAvailabilityEvent = Event & {
+  availability?: "available" | "not-available";
+};
 
 type PlayerState = {
   isPlaying: boolean;
@@ -24,7 +40,9 @@ type PlayerState = {
   isMuted: boolean;
   /** el play grande del tablero está a la vista (la barra se esconde) */
   heroInView: boolean;
+  remotePlaybackStatus: RemotePlaybackStatus;
   setHeroInView: (v: boolean) => void;
+  requestRemotePlayback: () => void;
   togglePlay: () => void;
   rewind10: () => void;
   goToLive: () => void;
@@ -41,7 +59,133 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [heroInView, setHeroInView] = useState(false);
   const [status, setStatus] = useState<StreamStatus>("idle");
   const [hasStarted, setHasStarted] = useState(false);
+  const [remotePlaybackStatus, setRemotePlaybackStatus] =
+    useState<RemotePlaybackStatus>("unavailable");
+  const remoteAvailableRef = useRef(false);
+  const airPlayAvailableRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  const updateRemoteAvailability = useCallback(() => {
+    setRemotePlaybackStatus((current) => {
+      if (current === "connecting" || current === "connected") return current;
+      return remoteAvailableRef.current || airPlayAvailableRef.current
+        ? "available"
+        : "unavailable";
+    });
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const airPlayAudio = audio as AirPlayAudio;
+    let active = true;
+    let availabilityWatchId: number | undefined;
+
+    // Safari necesita este atributo para ofrecer el stream como destino AirPlay.
+    audio.setAttribute("x-webkit-airplay", "allow");
+
+    const onAirPlayAvailability = (event: Event) => {
+      airPlayAvailableRef.current =
+        (event as AirPlayAvailabilityEvent).availability === "available";
+      updateRemoteAvailability();
+    };
+    const onAirPlayConnectionChange = () => {
+      setRemotePlaybackStatus(
+        airPlayAudio.webkitCurrentPlaybackTargetIsWireless
+          ? "connected"
+          : airPlayAvailableRef.current || remoteAvailableRef.current
+            ? "available"
+            : "unavailable",
+      );
+    };
+
+    audio.addEventListener(
+      "webkitplaybacktargetavailabilitychanged",
+      onAirPlayAvailability,
+    );
+    audio.addEventListener(
+      "webkitcurrentplaybacktargetiswirelesschanged",
+      onAirPlayConnectionChange,
+    );
+
+    const remote = audio.remote;
+    const onConnecting = () => setRemotePlaybackStatus("connecting");
+    const onConnect = () => setRemotePlaybackStatus("connected");
+    const onDisconnect = () => {
+      setRemotePlaybackStatus(
+        remoteAvailableRef.current || airPlayAvailableRef.current
+          ? "available"
+          : "unavailable",
+      );
+    };
+
+    if (remote) {
+      if (remote.state === "connected") {
+        setRemotePlaybackStatus("connected");
+      } else if (remote.state === "connecting") {
+        setRemotePlaybackStatus("connecting");
+      }
+      remote.addEventListener("connecting", onConnecting);
+      remote.addEventListener("connect", onConnect);
+      remote.addEventListener("disconnect", onDisconnect);
+      remote
+        .watchAvailability((available) => {
+          remoteAvailableRef.current = available;
+          updateRemoteAvailability();
+        })
+        .then((id) => {
+          if (active) {
+            availabilityWatchId = id;
+          } else {
+            remote.cancelWatchAvailability(id).catch(() => {});
+          }
+        })
+        .catch(() => {
+          // Algunos navegadores ofrecen prompt() pero no permiten observar
+          // disponibilidad; en ese caso dejamos que el selector nativo decida.
+          remoteAvailableRef.current = true;
+          updateRemoteAvailability();
+        });
+    }
+
+    return () => {
+      active = false;
+      audio.removeEventListener(
+        "webkitplaybacktargetavailabilitychanged",
+        onAirPlayAvailability,
+      );
+      audio.removeEventListener(
+        "webkitcurrentplaybacktargetiswirelesschanged",
+        onAirPlayConnectionChange,
+      );
+      if (remote) {
+        remote.removeEventListener("connecting", onConnecting);
+        remote.removeEventListener("connect", onConnect);
+        remote.removeEventListener("disconnect", onDisconnect);
+        if (availabilityWatchId !== undefined) {
+          remote.cancelWatchAvailability(availabilityWatchId).catch(() => {});
+        }
+      }
+    };
+  }, [updateRemoteAvailability]);
+
+  const requestRemotePlayback = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // prompt() debe ocurrir directamente dentro del gesto del usuario.
+    if (remoteAvailableRef.current && audio.remote) {
+      audio.remote.prompt().catch(() => {
+        // Cancelar el selector no es un error de reproducción.
+      });
+      return;
+    }
+
+    if (airPlayAvailableRef.current) {
+      (audio as AirPlayAudio).webkitShowPlaybackTargetPicker?.();
+    }
+  }, []);
 
   // Si el stream no arranca, la UI vuelve a "pausado" y avisa
   const onPlayFail = () => {
@@ -103,7 +247,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         volume,
         isMuted,
         heroInView,
+        remotePlaybackStatus,
         setHeroInView,
+        requestRemotePlayback,
         togglePlay,
         rewind10,
         goToLive,
