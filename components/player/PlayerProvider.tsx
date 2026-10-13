@@ -14,6 +14,9 @@ import {
 // Lo único nuevo es que el <audio> vive acá para que el play del tablero y
 // la barra fija controlen el mismo elemento.
 export const STREAM_URL = "https://medios.ciudaddigital.com.uy:18098/EspacioFM";
+const CAST_SDK_URL =
+  "https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1";
+const CAST_SDK_ID = "google-cast-sender-sdk";
 
 export type StreamStatus = "idle" | "connecting" | "error";
 export type RemotePlaybackStatus =
@@ -41,6 +44,7 @@ type PlayerState = {
   /** el play grande del tablero está a la vista (la barra se esconde) */
   heroInView: boolean;
   remotePlaybackStatus: RemotePlaybackStatus;
+  remotePlaybackMessage: string | null;
   setHeroInView: (v: boolean) => void;
   requestRemotePlayback: () => void;
   togglePlay: () => void;
@@ -61,18 +65,83 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [hasStarted, setHasStarted] = useState(false);
   const [remotePlaybackStatus, setRemotePlaybackStatus] =
     useState<RemotePlaybackStatus>("unavailable");
-  const remoteAvailableRef = useRef(false);
+  const [remotePlaybackMessage, setRemotePlaybackMessage] = useState<
+    string | null
+  >(null);
   const airPlayAvailableRef = useRef(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const castContextRef = useRef<cast.framework.CastContext | null>(null);
+  const castPlayerRef = useRef<cast.framework.RemotePlayer | null>(null);
+  const castControllerRef =
+    useRef<cast.framework.RemotePlayerController | null>(null);
+  const castLoadedSessionRef = useRef<string | null>(null);
 
   const updateRemoteAvailability = useCallback(() => {
     setRemotePlaybackStatus((current) => {
       if (current === "connecting" || current === "connected") return current;
-      return remoteAvailableRef.current || airPlayAvailableRef.current
+      return castContextRef.current || airPlayAvailableRef.current
         ? "available"
         : "unavailable";
     });
   }, []);
+
+  const startCastSession = useCallback(
+    async (session: cast.framework.CastSession) => {
+      const sessionId = session.getSessionId();
+      const currentMedia = session.getMediaSession()?.media;
+
+      if (castLoadedSessionRef.current === sessionId) {
+        if (currentMedia?.contentId === STREAM_URL) {
+          setRemotePlaybackStatus("connected");
+        }
+        return;
+      }
+
+      castLoadedSessionRef.current = sessionId;
+      setRemotePlaybackStatus("connecting");
+      setRemotePlaybackMessage(null);
+
+      const mediaInfo = new chrome.cast.media.MediaInfo(
+        STREAM_URL,
+        "audio/mpeg",
+      );
+      mediaInfo.streamType = chrome.cast.media.StreamType.LIVE;
+      mediaInfo.duration = -1;
+
+      const metadata = new chrome.cast.media.MusicTrackMediaMetadata();
+      metadata.title = "Espacio Sport 91.5 FM";
+      metadata.artist = "La radio del deporte de Mercedes";
+      metadata.albumArtist = "Espacio FM";
+      metadata.albumName = "En vivo";
+      const cover = new chrome.cast.Image(
+        `${window.location.origin}/cast-cover.png?v=1`,
+      );
+      cover.width = 720;
+      cover.height = 720;
+      metadata.images = [cover];
+      mediaInfo.metadata = metadata;
+
+      const request = new chrome.cast.media.LoadRequest(mediaInfo);
+      request.autoplay = true;
+
+      try {
+        await session.loadMedia(request);
+        audioRef.current?.pause();
+        setIsPlaying(true);
+        setStatus("idle");
+        setHasStarted(true);
+        setRemotePlaybackStatus("connected");
+      } catch {
+        castLoadedSessionRef.current = null;
+        setIsPlaying(false);
+        setRemotePlaybackStatus("available");
+        setRemotePlaybackMessage(
+          "La TV se conectó, pero no pudo abrir el audio. Probá de nuevo.",
+        );
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -80,10 +149,15 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     const airPlayAudio = audio as AirPlayAudio;
     let active = true;
-    let availabilityWatchId: number | undefined;
+    let castContext: cast.framework.CastContext | null = null;
+    let castPlayer: cast.framework.RemotePlayer | null = null;
+    let castController: cast.framework.RemotePlayerController | null = null;
 
     // Safari necesita este atributo para ofrecer el stream como destino AirPlay.
     audio.setAttribute("x-webkit-airplay", "allow");
+    airPlayAvailableRef.current =
+      typeof airPlayAudio.webkitShowPlaybackTargetPicker === "function";
+    updateRemoteAvailability();
 
     const onAirPlayAvailability = (event: Event) => {
       airPlayAvailableRef.current =
@@ -94,7 +168,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       setRemotePlaybackStatus(
         airPlayAudio.webkitCurrentPlaybackTargetIsWireless
           ? "connected"
-          : airPlayAvailableRef.current || remoteAvailableRef.current
+          : castContextRef.current || airPlayAvailableRef.current
             ? "available"
             : "unavailable",
       );
@@ -109,48 +183,151 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       onAirPlayConnectionChange,
     );
 
-    const remote = audio.remote;
-    const onConnecting = () => setRemotePlaybackStatus("connecting");
-    const onConnect = () => setRemotePlaybackStatus("connected");
-    const onDisconnect = () => {
-      setRemotePlaybackStatus(
-        remoteAvailableRef.current || airPlayAvailableRef.current
-          ? "available"
-          : "unavailable",
+    const initializeCast = () => {
+      if (!active || !window.cast?.framework || !chrome.cast) return;
+
+      castContext = cast.framework.CastContext.getInstance();
+      castContext.setOptions({
+        receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+        autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED,
+      });
+      castContextRef.current = castContext;
+
+      castPlayer = new cast.framework.RemotePlayer();
+      castController = new cast.framework.RemotePlayerController(castPlayer);
+      castPlayerRef.current = castPlayer;
+      castControllerRef.current = castController;
+
+      const onCastStateChanged = (event: cast.framework.CastStateEventData) => {
+        if (event.castState === cast.framework.CastState.CONNECTING) {
+          setRemotePlaybackStatus("connecting");
+        } else if (event.castState === cast.framework.CastState.CONNECTED) {
+          setRemotePlaybackStatus("connected");
+        } else {
+          setRemotePlaybackStatus("available");
+        }
+      };
+      const onSessionStateChanged = (
+        event: cast.framework.SessionStateEventData,
+      ) => {
+        if (
+          event.sessionState === cast.framework.SessionState.SESSION_STARTED ||
+          event.sessionState === cast.framework.SessionState.SESSION_RESUMED
+        ) {
+          void startCastSession(event.session);
+        } else if (
+          event.sessionState === cast.framework.SessionState.SESSION_ENDED
+        ) {
+          castLoadedSessionRef.current = null;
+          setIsPlaying(false);
+          setRemotePlaybackStatus("available");
+        }
+      };
+      const onRemotePauseChanged = () => {
+        if (castPlayer) setIsPlaying(!castPlayer.isPaused);
+      };
+      const onRemoteVolumeChanged = () => {
+        if (castPlayer) setVolume(castPlayer.volumeLevel);
+      };
+      const onRemoteMuteChanged = () => {
+        if (castPlayer) setIsMuted(castPlayer.isMuted);
+      };
+      const onRemoteConnectionChanged = () => {
+        if (castPlayer && !castPlayer.isConnected) {
+          castLoadedSessionRef.current = null;
+          setIsPlaying(false);
+          setRemotePlaybackStatus("available");
+        }
+      };
+
+      castContext.addEventListener(
+        cast.framework.CastContextEventType.CAST_STATE_CHANGED,
+        onCastStateChanged,
       );
+      castContext.addEventListener(
+        cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+        onSessionStateChanged,
+      );
+      castController.addEventListener(
+        cast.framework.RemotePlayerEventType.IS_PAUSED_CHANGED,
+        onRemotePauseChanged,
+      );
+      castController.addEventListener(
+        cast.framework.RemotePlayerEventType.VOLUME_LEVEL_CHANGED,
+        onRemoteVolumeChanged,
+      );
+      castController.addEventListener(
+        cast.framework.RemotePlayerEventType.IS_MUTED_CHANGED,
+        onRemoteMuteChanged,
+      );
+      castController.addEventListener(
+        cast.framework.RemotePlayerEventType.IS_CONNECTED_CHANGED,
+        onRemoteConnectionChanged,
+      );
+
+      setRemotePlaybackStatus(
+        castContext.getCastState() === cast.framework.CastState.CONNECTED
+          ? "connected"
+          : "available",
+      );
+
+      const currentSession = castContext.getCurrentSession();
+      if (currentSession) void startCastSession(currentSession);
+
+      return () => {
+        castContext?.removeEventListener(
+          cast.framework.CastContextEventType.CAST_STATE_CHANGED,
+          onCastStateChanged,
+        );
+        castContext?.removeEventListener(
+          cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+          onSessionStateChanged,
+        );
+        castController?.removeEventListener(
+          cast.framework.RemotePlayerEventType.IS_PAUSED_CHANGED,
+          onRemotePauseChanged,
+        );
+        castController?.removeEventListener(
+          cast.framework.RemotePlayerEventType.VOLUME_LEVEL_CHANGED,
+          onRemoteVolumeChanged,
+        );
+        castController?.removeEventListener(
+          cast.framework.RemotePlayerEventType.IS_MUTED_CHANGED,
+          onRemoteMuteChanged,
+        );
+        castController?.removeEventListener(
+          cast.framework.RemotePlayerEventType.IS_CONNECTED_CHANGED,
+          onRemoteConnectionChanged,
+        );
+      };
     };
 
-    if (remote) {
-      if (remote.state === "connected") {
-        setRemotePlaybackStatus("connected");
-      } else if (remote.state === "connecting") {
-        setRemotePlaybackStatus("connecting");
-      }
-      remote.addEventListener("connecting", onConnecting);
-      remote.addEventListener("connect", onConnect);
-      remote.addEventListener("disconnect", onDisconnect);
-      remote
-        .watchAvailability((available) => {
-          remoteAvailableRef.current = available;
-          updateRemoteAvailability();
-        })
-        .then((id) => {
-          if (active) {
-            availabilityWatchId = id;
-          } else {
-            remote.cancelWatchAvailability(id).catch(() => {});
-          }
-        })
-        .catch(() => {
-          // Algunos navegadores ofrecen prompt() pero no permiten observar
-          // disponibilidad; en ese caso dejamos que el selector nativo decida.
-          remoteAvailableRef.current = true;
-          updateRemoteAvailability();
-        });
+    let cleanupCast: (() => void) | undefined;
+    const previousCastCallback = window.__onGCastApiAvailable;
+    const onCastAvailable = (available: boolean) => {
+      if (available && active) cleanupCast = initializeCast();
+    };
+    window.__onGCastApiAvailable = onCastAvailable;
+
+    if (window.cast?.framework && chrome.cast) {
+      cleanupCast = initializeCast();
+    } else if (!document.getElementById(CAST_SDK_ID)) {
+      const script = document.createElement("script");
+      script.id = CAST_SDK_ID;
+      script.src = CAST_SDK_URL;
+      script.async = true;
+      document.head.appendChild(script);
     }
 
     return () => {
       active = false;
+      cleanupCast?.();
+      castContextRef.current = null;
+      castPlayerRef.current = null;
+      castControllerRef.current = null;
+      if (window.__onGCastApiAvailable === onCastAvailable) {
+        window.__onGCastApiAvailable = previousCastCallback;
+      }
       audio.removeEventListener(
         "webkitplaybacktargetavailabilitychanged",
         onAirPlayAvailability,
@@ -159,33 +336,47 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         "webkitcurrentplaybacktargetiswirelesschanged",
         onAirPlayConnectionChange,
       );
-      if (remote) {
-        remote.removeEventListener("connecting", onConnecting);
-        remote.removeEventListener("connect", onConnect);
-        remote.removeEventListener("disconnect", onDisconnect);
-        if (availabilityWatchId !== undefined) {
-          remote.cancelWatchAvailability(availabilityWatchId).catch(() => {});
-        }
-      }
     };
-  }, [updateRemoteAvailability]);
+  }, [startCastSession, updateRemoteAvailability]);
 
   const requestRemotePlayback = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    setRemotePlaybackMessage(null);
 
-    // prompt() debe ocurrir directamente dentro del gesto del usuario.
-    if (remoteAvailableRef.current && audio.remote) {
-      audio.remote.prompt().catch(() => {
-        // Cancelar el selector no es un error de reproducción.
-      });
+    const castContext = castContextRef.current;
+    if (castContext) {
+      setRemotePlaybackStatus("connecting");
+      setRemotePlaybackMessage(null);
+      castContext
+        .requestSession()
+        .then(() => {
+          const session = castContext.getCurrentSession();
+          if (session) void startCastSession(session);
+        })
+        .catch((error: chrome.cast.ErrorCode) => {
+          setRemotePlaybackStatus("available");
+          if (error !== chrome.cast.ErrorCode.CANCEL) {
+            setRemotePlaybackMessage(
+              "No pudimos conectar con la TV. Revisá que esté encendida y en la misma Wi‑Fi.",
+            );
+          }
+        });
       return;
     }
 
-    if (airPlayAvailableRef.current) {
+    if (
+      typeof (audio as AirPlayAudio).webkitShowPlaybackTargetPicker ===
+      "function"
+    ) {
       (audio as AirPlayAudio).webkitShowPlaybackTargetPicker?.();
+      return;
     }
-  }, []);
+
+    setRemotePlaybackMessage(
+      "Este navegador no permite enviar audio. Probá Chrome o Edge en computadora, o Safari con AirPlay.",
+    );
+  }, [startCastSession]);
 
   // Si el stream no arranca, la UI vuelve a "pausado" y avisa
   const onPlayFail = () => {
@@ -194,6 +385,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   };
 
   const togglePlay = () => {
+    const castPlayer = castPlayerRef.current;
+    const castController = castControllerRef.current;
+    if (castPlayer?.isConnected && castController) {
+      castController.playOrPause();
+      return;
+    }
+
     const audio = audioRef.current;
     if (!audio) return;
     if (audio.paused) {
@@ -216,6 +414,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   };
 
   const goToLive = () => {
+    const castSession = castContextRef.current?.getCurrentSession();
+    if (castSession) {
+      castLoadedSessionRef.current = null;
+      void startCastSession(castSession);
+      return;
+    }
+
     if (audioRef.current) {
       setStatus("connecting");
       audioRef.current.load();
@@ -227,11 +432,29 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const handleVolumeChange = (val: number[]) => {
     const [v] = val;
     setVolume(v);
+
+    const castPlayer = castPlayerRef.current;
+    const castController = castControllerRef.current;
+    if (castPlayer?.isConnected && castController) {
+      castPlayer.volumeLevel = v;
+      castController.setVolumeLevel();
+      setIsMuted(v === 0);
+      return;
+    }
+
     if (audioRef.current) audioRef.current.volume = v;
     setIsMuted(v === 0);
   };
 
   const toggleMute = () => {
+    const castPlayer = castPlayerRef.current;
+    const castController = castControllerRef.current;
+    if (castPlayer?.isConnected && castController) {
+      castPlayer.isMuted = !castPlayer.isMuted;
+      castController.muteOrUnmute();
+      return;
+    }
+
     if (!audioRef.current) return;
     const next = !isMuted;
     audioRef.current.muted = next;
@@ -248,6 +471,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         isMuted,
         heroInView,
         remotePlaybackStatus,
+        remotePlaybackMessage,
         setHeroInView,
         requestRemotePlayback,
         togglePlay,
