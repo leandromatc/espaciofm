@@ -100,7 +100,7 @@ function parseItems(xml: string): Episode[] {
 }
 
 /**
- * Una página de episodios, del más nuevo al más viejo. Se guarda en caché 30 minutos.
+ * Una página de episodios, del más nuevo al más viejo. Se guarda en caché 5 minutos.
  * Si el feed falla devuelve error: true (la portada se oculta, la subpágina avisa).
  */
 export async function fetchEpisodes(
@@ -108,7 +108,7 @@ export async function fetchEpisodes(
   offset = 0,
 ): Promise<EpisodesPage> {
   try {
-    const res = await fetch(PODCAST_RSS_URL, { next: { revalidate: 1800 } });
+    const res = await fetch(PODCAST_RSS_URL, { next: { revalidate: 300 } });
     if (!res.ok) return { episodes: [], hasMore: false, error: true };
     const all = parseItems(await res.text());
     return {

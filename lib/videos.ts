@@ -38,7 +38,7 @@ export async function fetchChannelVideos(limit = 5): Promise<Video[]> {
   try {
     const res = await fetch(
       `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL.id}`,
-      { next: { revalidate: 1800 } },
+      { next: { revalidate: 300 } },
     );
     if (!res.ok) return [];
     const xml = await res.text();
