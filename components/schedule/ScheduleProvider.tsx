@@ -10,7 +10,14 @@ import {
 } from "react";
 import { fetchPrograms } from "@/utils/fetchPrograms";
 import { supabase } from "@/lib/supabaseClient";
-import { DAYS, montevideoNow, toMinutes } from "@/utils/montevideo";
+import {
+  DAYS,
+  hasScheduleEnded,
+  isScheduleLive,
+  montevideoNow,
+  scheduleEndMinutes,
+  toMinutes,
+} from "@/utils/montevideo";
 import { radioIdsOf } from "@/lib/medio";
 
 export type Slot = {
@@ -194,7 +201,8 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
           isSpecial: true,
           date: e.date,
           lugar: e.lugar?.trim() || null,
-          enCv10: e.en_cv10 === true, enRadio: radioIds.has(e.id),
+          enCv10: e.en_cv10 === true,
+          enRadio: radioIds.has(e.id),
         }));
       return [...regular, ...special].sort((a, b) =>
         a.start.localeCompare(b.start),
@@ -204,16 +212,10 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
     const today = slotsFor(now.day, now.date);
     const current =
       today.find(
-        (s) =>
-          !s.isSpecial &&
-          now.minutes >= toMinutes(s.start) &&
-          now.minutes < toMinutes(s.end),
+        (s) => !s.isSpecial && isScheduleLive(now.minutes, s.start, s.end),
       ) ??
       today.find(
-        (s) =>
-          s.isSpecial &&
-          now.minutes >= toMinutes(s.start) &&
-          now.minutes < toMinutes(s.end),
+        (s) => s.isSpecial && isScheduleLive(now.minutes, s.start, s.end),
       ) ??
       null;
 
@@ -235,8 +237,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
         enRadio: radioIds.has(e.id),
       }))
       .sort((a, b) => a.start.localeCompare(b.start));
-    const isLive = (s: Slot) =>
-      now.minutes >= toMinutes(s.start) && now.minutes < toMinutes(s.end);
+    const isLive = (s: Slot) => isScheduleLive(now.minutes, s.start, s.end);
     const liveEvent = specialsToday.find((s) => s.enRadio && isLive(s)) ?? null;
     const liveVideoOnly =
       specialsToday.find((s) => !s.enRadio && s.enCv10 && isLive(s)) ?? null;
@@ -266,7 +267,12 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
       .filter(
         (e) =>
           e.date > now.date ||
-          (e.date === now.date && toMinutes(hhmm(e.end_time)) > now.minutes),
+          (e.date === now.date &&
+            !hasScheduleEnded(
+              now.minutes,
+              hhmm(e.start_time),
+              hhmm(e.end_time),
+            )),
       )
       .map<Slot>((e) => ({
         key: `s-${e.id}`,
@@ -277,13 +283,15 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
         isSpecial: true,
         date: e.date,
         lugar: e.lugar?.trim() || null,
-        enCv10: e.en_cv10 === true, enRadio: radioIds.has(e.id),
+        enCv10: e.en_cv10 === true,
+        enRadio: radioIds.has(e.id),
       }));
 
     const progress = onAir
       ? {
           elapsed: now.minutes - toMinutes(onAir.start),
-          total: toMinutes(onAir.end) - toMinutes(onAir.start),
+          total:
+            scheduleEndMinutes(onAir.start, onAir.end) - toMinutes(onAir.start),
         }
       : null;
 
@@ -313,6 +321,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
 
 export function useSchedule() {
   const ctx = useContext(ScheduleContext);
-  if (!ctx) throw new Error("useSchedule debe usarse dentro de ScheduleProvider");
+  if (!ctx)
+    throw new Error("useSchedule debe usarse dentro de ScheduleProvider");
   return ctx;
 }

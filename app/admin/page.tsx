@@ -1,16 +1,16 @@
 import Link from "next/link";
-import {
-  ChevronRight,
-  ExternalLink,
-  MapPin,
-  Plus,
-  Video,
-} from "lucide-react";
+import { ChevronRight, ExternalLink, MapPin, Plus, Video } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import type { Database } from "@/types/supabase";
 import { fetchAllNews } from "@/utils/fetchNews";
 import { fetchPrograms } from "@/utils/fetchPrograms";
-import { montevideoNow, toMinutes, type MontevideoNow } from "@/utils/montevideo";
+import {
+  hasScheduleEnded,
+  isScheduleLive,
+  montevideoNow,
+  toMinutes,
+  type MontevideoNow,
+} from "@/utils/montevideo";
 import { MEDIO_LABEL, medioOf, radioIdsOf } from "@/lib/medio";
 import {
   formatEventDate,
@@ -45,7 +45,9 @@ async function getUpcomingEvents(now: MontevideoNow) {
   }
 
   return ((data as SpecialEvent[]) ?? []).filter(
-    (event) => event.date > now.date || toMinutes(event.end_time) > now.minutes,
+    (event) =>
+      event.date > now.date ||
+      !hasScheduleEnded(now.minutes, event.start_time, event.end_time),
   );
 }
 
@@ -78,8 +80,7 @@ function ahoraYSigue(
   ].sort((a, b) => a.start.localeCompare(b.start));
 
   // Un evento en curso manda sobre la grilla (igual que en el sitio)
-  const live = (i: Item) =>
-    toMinutes(i.start) <= now.minutes && now.minutes < toMinutes(i.end);
+  const live = (i: Item) => isScheduleLive(now.minutes, i.start, i.end);
   const actual =
     items.find((i) => i.key.startsWith("e") && live(i)) ??
     items.find(live) ??
@@ -91,8 +92,7 @@ function ahoraYSigue(
         e.date === now.date &&
         !radioIds.has(e.id) &&
         e.en_cv10 &&
-        toMinutes(e.start_time) <= now.minutes &&
-        now.minutes < toMinutes(e.end_time),
+        isScheduleLive(now.minutes, e.start_time, e.end_time),
     ) ?? null;
   return { actual, siguiente, soloVideo };
 }
@@ -105,7 +105,11 @@ export default async function AdminDashboard() {
     getUpcomingEvents(now),
   ]);
   const radioIds = radioIdsOf(upcomingEvents);
-  const { actual, siguiente, soloVideo } = ahoraYSigue(programs, upcomingEvents, now);
+  const { actual, siguiente, soloVideo } = ahoraYSigue(
+    programs,
+    upcomingEvents,
+    now,
+  );
 
   return (
     <>
@@ -145,7 +149,10 @@ export default async function AdminDashboard() {
               </div>
               {actual && (
                 <Badge variant="live">
-                  <span aria-hidden className="size-1.5 rounded-full bg-primary" />
+                  <span
+                    aria-hidden
+                    className="size-1.5 rounded-full bg-primary"
+                  />
                   En vivo
                 </Badge>
               )}
@@ -153,7 +160,9 @@ export default async function AdminDashboard() {
             {siguiente && (
               <p className="border-t border-border pt-3 text-sm text-muted-foreground">
                 Sigue{" "}
-                <span className="font-medium text-foreground">{siguiente.name}</span>{" "}
+                <span className="font-medium text-foreground">
+                  {siguiente.name}
+                </span>{" "}
                 <span className="tnum font-mono">a las {siguiente.start}</span>
               </p>
             )}
@@ -201,8 +210,14 @@ export default async function AdminDashboard() {
         {/* Atajos con números: en una línea, sin tarjetas */}
         <nav aria-label="Atajos" className="-mt-2 flex flex-wrap gap-x-5">
           <Atajo href="/admin/noticias" texto={`${news.length} noticias`} />
-          <Atajo href="/admin/programacion" texto={`${programs.length} programas`} />
-          <Atajo href="/admin/programacion?tab=eventos" texto={`${upcomingEvents.length} eventos por venir`} />
+          <Atajo
+            href="/admin/programacion"
+            texto={`${programs.length} programas`}
+          />
+          <Atajo
+            href="/admin/programacion?tab=eventos"
+            texto={`${upcomingEvents.length} eventos por venir`}
+          />
         </nav>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -259,7 +274,10 @@ export default async function AdminDashboard() {
                         >
                           {MEDIO_LABEL[medio]}
                         </Badge>
-                        <ChevronRight aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+                        <ChevronRight
+                          aria-hidden
+                          className="size-4 shrink-0 text-muted-foreground"
+                        />
                       </Link>
                     </li>
                   );
@@ -302,7 +320,10 @@ export default async function AdminDashboard() {
                       <Badge variant={n.published ? "success" : "warning"}>
                         {n.published ? "Publicada" : "Borrador"}
                       </Badge>
-                      <ChevronRight aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+                      <ChevronRight
+                        aria-hidden
+                        className="size-4 shrink-0 text-muted-foreground"
+                      />
                     </Link>
                   </li>
                 ))}

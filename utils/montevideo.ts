@@ -40,6 +40,32 @@ export const toMinutes = (hhmm: string) => {
   return Number(h) * 60 + Number(m);
 };
 
+/**
+ * Devuelve el final de un bloque en la misma línea temporal que su inicio.
+ * Si el reloj vuelve hacia atrás (por ejemplo, 22:00 a 00:00), el final
+ * pertenece al día siguiente.
+ */
+export function scheduleEndMinutes(start: string, end: string) {
+  const startMinutes = toMinutes(start);
+  const endMinutes = toMinutes(end);
+  return endMinutes < startMinutes ? endMinutes + 24 * 60 : endMinutes;
+}
+
+export function isScheduleLive(nowMinutes: number, start: string, end: string) {
+  const startMinutes = toMinutes(start);
+  return (
+    nowMinutes >= startMinutes && nowMinutes < scheduleEndMinutes(start, end)
+  );
+}
+
+export function hasScheduleEnded(
+  nowMinutes: number,
+  start: string,
+  end: string,
+) {
+  return nowMinutes >= scheduleEndMinutes(start, end);
+}
+
 export const DAYS = [
   "lunes",
   "martes",

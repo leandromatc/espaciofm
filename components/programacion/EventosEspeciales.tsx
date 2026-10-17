@@ -1,7 +1,7 @@
 "use client";
 
 import { useSchedule } from "@/components/schedule/ScheduleProvider";
-import { toMinutes } from "@/utils/montevideo";
+import { hasScheduleEnded } from "@/utils/montevideo";
 import { MEDIO_LABEL, medioOf, radioIdsOf } from "@/lib/medio";
 
 export type EventoEspecial = {
@@ -30,7 +30,8 @@ export function EventosEspeciales({ events }: { events: EventoEspecial[] }) {
   const upcoming = events.filter(
     (e) =>
       e.date > nowLabel.date ||
-      (e.date === nowLabel.date && toMinutes(fmt(e.end_time)) > nowMinutes),
+      (e.date === nowLabel.date &&
+        !hasScheduleEnded(nowMinutes, fmt(e.start_time), fmt(e.end_time))),
   );
   if (upcoming.length === 0) return null;
 

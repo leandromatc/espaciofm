@@ -7,7 +7,7 @@ import {
 } from "@/components/admin/ProgramacionPanel";
 import { formatEventDate, formatTime } from "@/lib/adminFormat";
 import { MEDIO_LABEL, medioOf, radioIdsOf } from "@/lib/medio";
-import { montevideoNow, toMinutes } from "@/utils/montevideo";
+import { hasScheduleEnded, montevideoNow } from "@/utils/montevideo";
 
 type Program = {
   id: number;
@@ -77,10 +77,15 @@ export default async function AdminProgramacionPage({
       lugar: e.lugar?.trim() || null,
       medioLabel: MEDIO_LABEL[medio],
       medioVariant:
-        medio === "radio-cv10" ? "info" : medio === "cv10" ? "warning" : "secondary",
+        medio === "radio-cv10"
+          ? "info"
+          : medio === "cv10"
+            ? "warning"
+            : "secondary",
       past:
         e.date < now.date ||
-        (e.date === now.date && toMinutes(e.end_time) <= now.minutes),
+        (e.date === now.date &&
+          hasScheduleEnded(now.minutes, e.start_time, e.end_time)),
     };
   });
 

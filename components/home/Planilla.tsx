@@ -4,11 +4,18 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { LiveDot } from "@/components/player/LiveDot";
 import { useSchedule } from "@/components/schedule/ScheduleProvider";
-import { toMinutes } from "@/utils/montevideo";
+import { hasScheduleEnded } from "@/utils/montevideo";
 import { MEDIO_LABEL, medioOf } from "@/lib/medio";
 
 export function Planilla() {
-  const { ready, today, onAir, next, nowLabel, nowMinutes: nowMin } = useSchedule();
+  const {
+    ready,
+    today,
+    onAir,
+    next,
+    nowLabel,
+    nowMinutes: nowMin,
+  } = useSchedule();
 
   const dateLabel = ready
     ? new Date(`${nowLabel.date}T12:00:00`).toLocaleDateString("es-UY", {
@@ -59,8 +66,10 @@ export function Planilla() {
           <ol className="divide-y divide-chalk/15 border-b border-chalk/15">
             {today.map((slot) => {
               const live = onAir?.key === slot.key;
-              const isNext = !live && next?.key === slot.key && next.when === "hoy";
-              const past = !live && toMinutes(slot.end) <= nowMin;
+              const isNext =
+                !live && next?.key === slot.key && next.when === "hoy";
+              const past =
+                !live && hasScheduleEnded(nowMin, slot.start, slot.end);
 
               return (
                 <li
@@ -83,8 +92,10 @@ export function Planilla() {
 
                   <div className="min-w-0">
                     <p
-                      className={`font-display text-3xl font-extrabold uppercase leading-[0.95] text-balance sm:text-4xl ${
-                        past ? "line-through decoration-chalk/50 decoration-2" : ""
+                      className={`text-balance font-display text-3xl font-extrabold uppercase leading-[0.95] sm:text-4xl ${
+                        past
+                          ? "line-through decoration-chalk/50 decoration-2"
+                          : ""
                       }`}
                     >
                       {slot.name}
@@ -92,7 +103,11 @@ export function Planilla() {
                     {slot.description && (
                       <p
                         className={`mt-1.5 line-clamp-1 text-sm ${
-                          live ? "text-ink/75" : past ? "text-chalk/60" : "text-chalk-dim"
+                          live
+                            ? "text-ink/75"
+                            : past
+                              ? "text-chalk/60"
+                              : "text-chalk-dim"
                         }`}
                       >
                         {slot.description}
@@ -103,7 +118,7 @@ export function Planilla() {
                   <div className="flex flex-col items-end gap-1.5 font-mono text-xs font-bold uppercase tracking-wider">
                     {live && (
                       <span className="flex items-center gap-2 text-brand">
-                        <LiveDot className="[--dot:9px] text-brand" />
+                        <LiveDot className="text-brand [--dot:9px]" />
                         Al aire
                       </span>
                     )}
@@ -136,7 +151,7 @@ export function Planilla() {
 
         <Link
           href="/programacion"
-          className="tiza-link press mt-4 inline-flex min-h-11 items-center gap-2 font-sans font-semibold text-sm uppercase tracking-wider"
+          className="tiza-link press mt-4 inline-flex min-h-11 items-center gap-2 font-sans text-sm font-semibold uppercase tracking-wider"
         >
           Ver la grilla de la semana
           <ArrowRight className="h-4 w-4" />
